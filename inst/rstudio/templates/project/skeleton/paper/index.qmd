@@ -39,8 +39,10 @@ thanks: |
   We thank seminar and conference participants for helpful comments.
   Replace this acknowledgments block with your own.
 bibliography: references.bib
+link-citations: true
 filters:
   - mark-last-author.lua
+  - eq-parens.lua
 
 format:
   pdf:
@@ -60,9 +62,13 @@ format:
     number-sections: true
     keep-tex: true
     subparagraph: true
+    fig-cap-location: bottom
     template-partials:
       - title.tex
     include-in-header: preamble.tex
+
+crossref:
+  eq-prefix: "Eq."
 ---
 
 ```{=tex}

@@ -11,8 +11,8 @@ local function mark(list)
   local n = #list
   if n == 0 then return end
   list[1]["is-first"] = true
+  list[n]["is-last"] = true              -- ALWAYS mark the last author, even if it is also the first
   if n > 1 then
-    list[n]["is-last"] = true
     list[n-1]["next-is-last"] = true
     if n == 2 then
       list[n]["is-only-coauthor"] = true

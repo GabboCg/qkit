@@ -11,10 +11,49 @@
 \usepackage{float}
 \usepackage{sectsty}
 \usepackage{orcidlink}
+\usepackage{etoolbox}
 
 % Pin footnotes to the bottom of every page, even on short pages
 % (default LaTeX would float them up against the body text).
 \usepackage[bottom]{footmisc}
+
+% Render title-page \thanks{} (the paper's only footnote unless the
+% author adds inline ^[...] notes) as an asterisk instead of the
+% article-class default numeric superscript.
+% Belt-and-braces: (1) set \thefootnote to symbol form, (2) override
+% \@makefnmark so the marker is drawn as a literal * at \normalsize
+% (so it does not shrink to invisibility next to the ORCID icon).
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\makeatletter
+\renewcommand\@makefnmark{\hbox{\textsuperscript{\normalsize *}}}
+\makeatother
+
+% Bibliography spacing: keep double-spacing off inside the reference
+% list even when the paper body uses linestretch: 2, and tighten
+% inter-entry space. Pandoc emits references inside CSLReferences (or
+% under natbib, the thebibliography list) — this hook applies on each
+% environment open, so it stays cheap.
+\AtBeginEnvironment{CSLReferences}{%
+  \singlespacing%
+  \setlength{\parskip}{4pt}%
+}
+\AtBeginEnvironment{thebibliography}{%
+  \singlespacing%
+  \setlength{\parskip}{4pt}%
+}
+
+% Asymmetric vertical padding around [H]-placed figures. \intextsep
+% is used both above and below in-text figures, so we add a small
+% positive \vspace before each figure and a small negative \vspace
+% after each caption for extra top-heavy breathing room. Values here
+% pair well with the section top-space trim below so a figure
+% immediately followed by a section heading does not accumulate a
+% huge accumulated gap.
+\setlength{\intextsep}{20pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{20pt plus 2pt minus 2pt}
+\setlength{\floatsep}{20pt plus 2pt minus 2pt}
+\BeforeBeginEnvironment{figure}{\vspace{10pt}}
+\AfterEndEnvironment{figure}{\vspace{-10pt}}
 
 \AtBeginEnvironment{tabular}{\onehalfspacing}
 
@@ -29,15 +68,21 @@
 
 % Italic subsection / subsubsection headings, with both sectsty and
 % an explicit \@startsection override so the article-class default
-% \bfseries cannot leak through.
+% \bfseries cannot leak through. Trim the "before" space on section /
+% subsection headings so a figure immediately followed by a heading
+% does not accumulate a huge gap (paired with the \intextsep and
+% \BeforeBeginEnvironment{figure} hooks above).
 \subsectionfont{\large\itshape}
 \subsubsectionfont{\large\itshape}
 \makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}%
+  {-1.5ex \@plus -0.5ex \@minus -.2ex}{1.0ex \@plus .2ex}%
+  {\normalfont\Large\bfseries}}
 \renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-  {-3.25ex \@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}%
+  {-1.5ex \@plus -0.5ex \@minus -.2ex}{0.8ex \@plus .2ex}%
   {\normalfont\large\itshape}}
 \renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
-  {-3.25ex \@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}%
+  {-1.5ex \@plus -0.5ex \@minus -.2ex}{0.8ex \@plus .2ex}%
   {\normalfont\large\itshape}}
 \makeatother
 
@@ -66,9 +111,12 @@
 % preceding the equation is short, and by article-class default
 % \abovedisplayshortskip is 0pt while \belowdisplayshortskip is 7pt
 % — that asymmetry is what makes the gap above an equation feel
-% tighter than the gap below. We force all four to one common value
-% and re-apply the setting after \begin{document} in case
-% setspace/linestretch adjusted them in the meantime.
+% tighter than the gap below. We force all four to one common value,
+% re-apply at \AtBeginDocument (in case setspace/linestretch
+% adjusted them), and force them again at every display-math open
+% via \everydisplay AND explicit \BeforeBeginEnvironment hooks for
+% equation, equation*, align, and align* so amsmath cannot reset
+% them locally inside the environment.
 \setlength{\abovedisplayskip}{12pt}
 \setlength{\belowdisplayskip}{12pt}
 \setlength{\abovedisplayshortskip}{12pt}
@@ -78,6 +126,32 @@
   \setlength{\belowdisplayskip}{12pt}%
   \setlength{\abovedisplayshortskip}{12pt}%
   \setlength{\belowdisplayshortskip}{12pt}%
+}
+\everydisplay=\expandafter{\the\everydisplay
+  \abovedisplayskip=12pt\relax
+  \belowdisplayskip=12pt\relax
+  \abovedisplayshortskip=12pt\relax
+  \belowdisplayshortskip=12pt\relax
+}
+\BeforeBeginEnvironment{equation}{%
+  \setlength{\abovedisplayskip}{12pt}%
+  \setlength{\belowdisplayskip}{12pt}%
+  \setlength{\abovedisplayshortskip}{12pt}%
+  \setlength{\belowdisplayshortskip}{12pt}%
+}
+\BeforeBeginEnvironment{equation*}{%
+  \setlength{\abovedisplayskip}{12pt}%
+  \setlength{\belowdisplayskip}{12pt}%
+  \setlength{\abovedisplayshortskip}{12pt}%
+  \setlength{\belowdisplayshortskip}{12pt}%
+}
+\BeforeBeginEnvironment{align}{%
+  \setlength{\abovedisplayskip}{12pt}%
+  \setlength{\belowdisplayskip}{12pt}%
+}
+\BeforeBeginEnvironment{align*}{%
+  \setlength{\abovedisplayskip}{12pt}%
+  \setlength{\belowdisplayskip}{12pt}%
 }
 
 \theoremstyle{plain}
