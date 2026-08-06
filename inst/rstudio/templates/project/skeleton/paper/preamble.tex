@@ -55,7 +55,18 @@
 \BeforeBeginEnvironment{figure}{\vspace{10pt}}
 \AfterEndEnvironment{figure}{\vspace{-10pt}}
 
+% Keep tables tighter than the double-spaced body. Pandoc renders
+% markdown pipe tables as `longtable`, NOT `tabular`, so hooking only
+% `tabular` leaves every markdown table inheriting linestretch and
+% rendering double-spaced. Both environments are hooked so pipe tables
+% and knitr/raw tabular tables look the same.
+%
+% For a document with long tables, \singlespacing here is often better:
+% at \onehalfspacing a 15-row table can overflow a page, and because
+% longtable breaks across pages rather than floating, it will split and
+% orphan rows rather than move to the next page.
 \AtBeginEnvironment{tabular}{\onehalfspacing}
+\AtBeginEnvironment{longtable}{\onehalfspacing}
 
 % (The "Preliminary draft" subtitle and the author block with ORCID +
 % \thanks{} footnotes are emitted by the custom title.tex partial
