@@ -3,6 +3,12 @@ title: "Your Paper Title"
 date: today
 date-format: "[This revision:] D MMMM YYYY"
 bibliography: references-appendix.bib
+# Matches the main paper: natbib/BibTeX rather than CSL, so the whole
+# author-year citation is clickable and tinted. See index.qmd for the
+# rationale and for how to switch back to citeproc.
+cite-method: natbib
+biblio-style: apalike
+natbiboptions: round,authoryear
 
 format:
   pdf:

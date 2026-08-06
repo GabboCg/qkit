@@ -161,3 +161,19 @@
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{assumption}[theorem]{Assumption}
+
+% ---------------------------------------------------------------------
+% Citation styling (natbib).
+%
+% natbib emits an author-year citation as \NAT@nmfmt{<authors>}, then
+% \hyper@natlinkbreak, then \NAT@date -- all inside one \NAT@hyper@
+% group. hyperref turns that into two adjacent link annotations, so the
+% author names are clickable too and both halves pick up citecolor.
+% Quarto's default citeproc instead leaves the names outside the link
+% and tints only the year.
+%
+% \setcitestyle{aysep={}} drops natbib's comma before the year, giving
+% "(Campbell and Shiller 1988)" in the Chicago author-date form rather
+% than "(Campbell and Shiller, 1988)".
+% ---------------------------------------------------------------------
+\setcitestyle{aysep={}}
