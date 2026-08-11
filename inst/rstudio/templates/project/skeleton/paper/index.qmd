@@ -55,6 +55,7 @@ link-citations: true
 filters:
   - mark-last-author.lua
   - eq-parens.lua
+  - float-notes.lua
 
 format:
   pdf:
