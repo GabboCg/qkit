@@ -124,6 +124,28 @@ reference list.
 For example, the appendix cites @cooling-handbook2024 above; the
 main paper does not.
 
+# Tables and Figures with Notes {#sec-app-floats}
+
+Appendix floats carry notes exactly as main-paper floats do, via the
+same `note=` attribute and the same `float-notes.lua` filter. They take
+the section letter, so a float in this section is numbered E.1, E.2,
+and so on. See @fig-app-example and @tbl-app-example.
+
+![Example appendix figure](example-figure.pdf){#fig-app-example width=70%
+note="Appendix figures carry notes exactly as main-paper figures do. The
+caption sits below the graphic because the appendix YAML sets
+`fig-cap-location: bottom`, matching the main paper."}
+
+| Variable | Mean | SD |
+|----------|-----:|---:|
+| Outcome $y$ | 0.50 | 0.10 |
+| Regressor $x$ | 0.00 | 1.00 |
+
+: Example appendix table. {#tbl-app-example note="Appendix tables take
+the section letter in their number. This table also exercises the
+appendix preamble's longtable spacing hook, without which every markdown
+table here would inherit the double-spaced body."}
+
 ```{=tex}
 \newpage
 ```

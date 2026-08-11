@@ -264,7 +264,7 @@ Another term
 
 ## Summary Statistics {#sec-data-summary}
 
-Reference Table @tbl-pipe for descriptive statistics. The first
+Reference @tbl-pipe for descriptive statistics. The first
 example below is a **pipe table** written in pure markdown:
 
 | Variable | Mean | SD |
@@ -273,18 +273,43 @@ example below is a **pipe table** written in pure markdown:
 | Focal regressor $x$ | 0.00 | 1.00 |
 | Control $z^{1}$ | 0.00 | 1.00 |
 
-: Pipe-table example. {#tbl-pipe}
+: Pipe-table example. {#tbl-pipe note="This table demonstrates a float
+note. It is set small and justified directly under the caption.
+Citations such as @example2025 and references such as @eq-baseline
+resolve normally."}
+
+Do not write a literal "Table" before a `@tbl-` reference. Quarto
+supplies the prefix already, so `Table @tbl-pipe` renders as "Table
+Table 1". The same trap applies to `@fig-` and to `@sec-`.
 
 The alignment symbols `:-`, `-:`, `:-:` after each header dash
 control left, right, and centre alignment of the column.
 
-The second example uses a **`knitr` chunk** for a computed table.
-With `eval: false` it stays a placeholder; flip to `true` and add
-real data to render a `knitr::kable()` table:
+## Table and Figure Notes {#sec-data-notes}
+
+Both floats above and below carry a `note=` attribute, which renders as
+a small justified block under the caption --- the layout most economics
+and finance journals ask for. Notes work three ways.
+
+**Markdown floats** take `note=` alongside the label, as the pipe table
+above and @fig-example below both do. Citations and cross-references
+inside a note always resolve.
+
+Inline *formatting* inside a note behaves differently on the two paths,
+because Quarto parses a table's caption attributes as plain text before
+the note is read. In a **figure** note, code spans, emphasis, and maths
+render normally. In a **table** note they are flattened --- writing
+`` `longtable` `` there produces bare `longtable`, not monospace. Keep
+table notes to plain prose, citations, and references.
+
+**Computed floats from `knitr` chunks** cannot use `note=`: chunk
+options do not reach the float. Embed the macro in the caption instead,
+and note that its content is raw LaTeX, so write `\citet{key}` rather
+than `@key`:
 
 ```{r}
 #| label: tbl-summary
-#| tbl-cap: "Summary statistics for the example panel."
+#| tbl-cap: "Summary statistics.\\floatnote{Standard errors clustered by unit.}"
 #| echo: false
 #| eval: false
 # knitr::kable(your_data_frame, booktabs = TRUE)
@@ -294,6 +319,37 @@ Chunk options live in the `#| key: value` block at the top of the
 chunk. `label:` drives cross-references (use `tbl-` for tables,
 `fig-` for figures), `tbl-cap:` sets the caption, and `eval:`
 controls whether the code actually runs.
+
+**Hand-written floats** --- the usual case for a regression table
+exported from Stata or R --- call `\floatnote{}` after the caption:
+
+```` markdown
+```{=tex}
+\begin{table}[H]
+  \caption{Order-Flow Imbalance}
+  \floatnote{This table presents ... $t$-statistics in parentheses.}
+  \begin{center}\input{Tables/oib.tex}\end{center}
+  \label{tbl-oib}
+\end{table}
+```
+````
+
+No `\bf` is needed in the `\caption{}` --- the template already sets
+captions in bold with a period after the label.
+
+One limitation: `note=` only works on a float carrying a
+cross-reference label (`#fig-` or `#tbl-`). An unlabelled float
+silently drops its note.
+
+## Figures {#sec-data-figures}
+
+Figures take `note=` exactly as tables do. @fig-example shows the
+resulting layout: the graphic first, then the caption, then the note.
+
+![Example figure title](example-figure.pdf){#fig-example width=70%
+note="This figure demonstrates the figure note. Because
+`fig-cap-location: bottom` is set in the YAML header, the caption sits
+under the graphic and the note under the caption."}
 
 # Methodology {#sec-method}
 
