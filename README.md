@@ -33,7 +33,7 @@ templates.
 | `beamer` | qkit Beamer Presentation | XeLaTeX slides | `index.qmd` + `_extensions/qkit/` |
 | `cv` | qkit CV | LuaLaTeX one-pager | `index.qmd` + `_extensions/qkit/` |
 | `book` | qkit Book | XeLaTeX book (Krantz class) | full multi-file Quarto book project |
-| `paper` | qkit Paper | XeLaTeX article + Internet Appendix | `index.qmd`, `internet-appendix.qmd`, `title.tex`, `preamble.tex`, `preamble-appendix.tex`, `mark-last-author.lua`, `references.bib`, `references-appendix.bib` |
+| `paper` | qkit Paper | XeLaTeX article + Internet Appendix | `index.qmd`, `internet-appendix.qmd`, `title.tex`, `preamble.tex`, `preamble-appendix.tex`, `mark-last-author.lua`, `eq-parens.lua`, `float-notes.lua`, `example-figure.pdf`, `references.bib`, `references-appendix.bib` |
 
 The Beamer and CV formats are backed by a Quarto extension; Book and
 Paper are self-contained project scaffolds (no extension installed).
