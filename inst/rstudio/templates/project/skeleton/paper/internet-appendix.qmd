@@ -9,6 +9,12 @@ bibliography: references-appendix.bib
 cite-method: natbib
 biblio-style: apalike
 natbiboptions: round,authoryear
+# float-notes.lua gives figures and tables a note= attribute. eq-parens.lua
+# and mark-last-author.lua are deliberately NOT run here: the first would
+# change how appendix equation references render, and the second only acts
+# on the main paper's YAML author list.
+filters:
+  - float-notes.lua
 
 format:
   pdf:
@@ -28,6 +34,7 @@ format:
     number-sections: true
     keep-tex: true
     subparagraph: true
+    fig-cap-location: bottom
     include-in-header: preamble-appendix.tex
 ---
 

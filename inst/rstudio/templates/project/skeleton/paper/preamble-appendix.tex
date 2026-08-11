@@ -2,7 +2,9 @@
 % Loaded via the YAML include-in-header field in internet-appendix.qmd.
 
 \usepackage{amsthm}
+\usepackage{caption}
 \usepackage{subcaption}
+\usepackage{ragged2e}
 \usepackage{setspace}
 \usepackage{enumitem}
 \usepackage{multirow}
@@ -16,7 +18,54 @@
 % (default LaTeX would float them up against the body text).
 \usepackage[bottom]{footmisc}
 
+% ---------------------------------------------------------------------
+% Caption and float-note styling. Kept identical to preamble.tex -- the
+% two preambles are deliberately parallel, so edit both together.
+%
+% Captions render as a bold "Table A.1." label with a period separator,
+% then a bold ragged-right title at full text width. \floatnote sets a
+% small justified note directly underneath, opening with an italic
+% "Note:" -- the layout used by most economics and finance journals.
+%
+% The [sub] line exists only to stop subcaptions inheriting textfont=bf.
+% It deliberately does NOT set labelformat=simple, which would restyle
+% subcaptions from "(a) Panel" to "a Panel" and subfigure references
+% from 1(a) to 1a. That is subfigure styling, not caption styling.
+% ---------------------------------------------------------------------
+\captionsetup{font=normal, labelfont=bf, textfont=bf, labelsep=period,
+              justification=raggedright, singlelinecheck=false,
+              width=1\textwidth, indention=0pt}
+\captionsetup[sub]{textfont=normalfont}
+
+% \floatnote{...} -- the note block that sits under a caption.
+%
+% One definition, used two ways: float-notes.lua appends it inside the
+% generated \caption{} for markdown floats, and an author writes it by
+% hand immediately after \caption{} in a raw-LaTeX float.
+%
+% The resets are load-bearing. \parindent must be set AFTER \justifying,
+% because ragged2e restores \parindent from \JustifyingParindent and this
+% template sets `indent: true` -- with the wrong order the note's first
+% line indents and no longer aligns with the caption above it. \leftskip
+% and \hangindent clear the caption's hanging indent, which would
+% otherwise indent every continuation line.
+\newcommand{\floatnote}[1]{%
+  \par\vspace{2pt}%
+  \begingroup
+    \normalfont\small\singlespacing\justifying
+    \leftskip=0pt \rightskip=0pt
+    \parindent=0pt \hangindent=0pt \hangafter=0
+    \textit{Note:} #1\par
+  \endgroup
+}
+
+% Keep tables tighter than the double-spaced body. Pandoc renders
+% markdown pipe tables as `longtable`, NOT `tabular`, so hooking only
+% `tabular` leaves every markdown table inheriting linestretch and
+% rendering double-spaced. Both environments are hooked so pipe tables
+% and knitr/raw tabular tables look the same.
 \AtBeginEnvironment{tabular}{\onehalfspacing}
+\AtBeginEnvironment{longtable}{\onehalfspacing}
 
 % Custom \maketitle for the Internet Appendix that matches the
 % source draft layout: "Internet Appendix for" / title / authors /
