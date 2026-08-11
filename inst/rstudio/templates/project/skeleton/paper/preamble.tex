@@ -60,8 +60,16 @@
 % line indents and no longer aligns with the caption above it. \leftskip
 % and \hangindent clear the caption's hanging indent, which would
 % otherwise indent every continuation line.
+% The opening \vspace sets the caption-to-note gap, and the arithmetic is
+% worth knowing before changing it. The \par that closes the caption uses
+% the BODY's baselineskip, which `linestretch: 2` doubles to 28pt, so the
+% gap is 28pt + this vspace no matter what font the caption is in.
+% Restyling the caption (\captionsetup{font=singlespacing}) does not move
+% it -- the interline glue at that \par is already fixed by the outer
+% spacing. -4pt therefore yields a 24pt gap: tighter than the 30pt that
+% \vspace{2pt} gives, while still clearly separating title from note.
 \newcommand{\floatnote}[1]{%
-  \par\vspace{2pt}%
+  \par\vspace{-4pt}%
   \begingroup
     \normalfont\small\singlespacing\justifying
     \leftskip=0pt \rightskip=0pt
