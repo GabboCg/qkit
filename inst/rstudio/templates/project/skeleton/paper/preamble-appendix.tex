@@ -13,6 +13,9 @@
 \usepackage{float}
 \usepackage{sectsty}
 \usepackage{orcidlink}
+% Quarto's template already loads etoolbox, but this preamble uses
+% \AtBeginEnvironment / \BeforeBeginEnvironment directly, so declare it.
+\usepackage{etoolbox}
 
 % Pin footnotes to the bottom of every page, even on short pages
 % (default LaTeX would float them up against the body text).
@@ -55,10 +58,13 @@
 % gap is 28pt + this vspace no matter what font the caption is in.
 % Restyling the caption (\captionsetup{font=singlespacing}) does not move
 % it -- the interline glue at that \par is already fixed by the outer
-% spacing. -4pt therefore yields a 24pt gap: tighter than the 30pt that
-% \vspace{2pt} gives, while still clearly separating title from note.
+% spacing. -6pt therefore yields a 22pt gap: clearly more than the
+% note's own 13.6pt leading, so the note reads as a separate block,
+% without the hole that \vspace{2pt} (30pt) or \vspace{-4pt} (24pt)
+% leaves under the caption. Below about 16pt the note stops reading as a
+% block of its own and starts looking like a third caption line.
 \newcommand{\floatnote}[1]{%
-  \par\vspace{-4pt}%
+  \par\vspace{-6pt}%
   \begingroup
     \normalfont\small\singlespacing\justifying
     \leftskip=0pt \rightskip=0pt
@@ -127,20 +133,40 @@
 \hyphenpenalty=10000
 \hbadness=10000
 
-% Symmetric display-equation spacing. See the comment in
-% preamble.tex for the rationale; the four lengths are pinned to
-% a single common value here and re-applied at \begin{document} so
-% setspace / linestretch cannot drift them.
-\setlength{\abovedisplayskip}{12pt}
-\setlength{\belowdisplayskip}{12pt}
-\setlength{\abovedisplayshortskip}{12pt}
-\setlength{\belowdisplayshortskip}{12pt}
-\AtBeginDocument{%
-  \setlength{\abovedisplayskip}{12pt}%
-  \setlength{\belowdisplayskip}{12pt}%
-  \setlength{\abovedisplayshortskip}{12pt}%
-  \setlength{\belowdisplayshortskip}{12pt}%
+% Symmetric display-equation spacing. See the long comment in
+% preamble.tex for the rationale. Two things happen here: the four
+% display-skip lengths are pinned to one common value (and re-pinned
+% after setspace, at every display open), and \qkitdisplayfix cancels
+% the extra \baselineskip that TeX contributes above a display which
+% starts in vertical mode -- which is every markdown display, since
+% Pandoc always emits one as its own block.
+\newlength{\qkitdisplayskip}
+\setlength{\qkitdisplayskip}{12pt}
+\newcommand{\qkitdisplayskips}{%
+  \setlength{\abovedisplayskip}{\qkitdisplayskip}%
+  \setlength{\belowdisplayskip}{\qkitdisplayskip}%
+  \setlength{\abovedisplayshortskip}{\qkitdisplayskip}%
+  \setlength{\belowdisplayshortskip}{\qkitdisplayskip}%
 }
+\makeatletter
+\newcommand{\qkitdisplayfix}{%
+  \qkitdisplayskips
+  \ifvmode\ifdim\prevdepth>-\@m pt \vskip-\baselineskip\fi\fi
+}
+\makeatother
+\qkitdisplayskips
+\AtBeginDocument{\qkitdisplayskips}
+\everydisplay=\expandafter{\the\everydisplay \qkitdisplayskips}
+% amsmath defines \[ ... \] as the equation* environment, so the
+% equation* hook also covers unlabelled `$$ ... $$` displays.
+\BeforeBeginEnvironment{equation}{\qkitdisplayfix}
+\BeforeBeginEnvironment{equation*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{align}{\qkitdisplayfix}
+\BeforeBeginEnvironment{align*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{gather}{\qkitdisplayfix}
+\BeforeBeginEnvironment{gather*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{multline}{\qkitdisplayfix}
+\BeforeBeginEnvironment{multline*}{\qkitdisplayfix}
 
 % Appendix labels: sections render as "Appendix A", "Appendix B",
 % with tables / figures / equations as A.1, A.2, B.1, etc.

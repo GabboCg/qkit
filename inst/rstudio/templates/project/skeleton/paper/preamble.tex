@@ -66,10 +66,13 @@
 % gap is 28pt + this vspace no matter what font the caption is in.
 % Restyling the caption (\captionsetup{font=singlespacing}) does not move
 % it -- the interline glue at that \par is already fixed by the outer
-% spacing. -4pt therefore yields a 24pt gap: tighter than the 30pt that
-% \vspace{2pt} gives, while still clearly separating title from note.
+% spacing. -6pt therefore yields a 22pt gap: clearly more than the
+% note's own 13.6pt leading, so the note reads as a separate block,
+% without the hole that \vspace{2pt} (30pt) or \vspace{-4pt} (24pt)
+% leaves under the caption. Below about 16pt the note stops reading as a
+% block of its own and starts looking like a third caption line.
 \newcommand{\floatnote}[1]{%
-  \par\vspace{-4pt}%
+  \par\vspace{-6pt}%
   \begingroup
     \normalfont\small\singlespacing\justifying
     \leftskip=0pt \rightskip=0pt
@@ -167,53 +170,66 @@
    \item\relax}
   {\endlist}
 
-% Symmetric display-equation spacing. LaTeX has FOUR display-skip
-% lengths: the short-skip variants kick in when the line immediately
-% preceding the equation is short, and by article-class default
-% \abovedisplayshortskip is 0pt while \belowdisplayshortskip is 7pt
-% — that asymmetry is what makes the gap above an equation feel
-% tighter than the gap below. We force all four to one common value,
-% re-apply at \AtBeginDocument (in case setspace/linestretch
-% adjusted them), and force them again at every display-math open
-% via \everydisplay AND explicit \BeforeBeginEnvironment hooks for
-% equation, equation*, align, and align* so amsmath cannot reset
-% them locally inside the environment.
-\setlength{\abovedisplayskip}{12pt}
-\setlength{\belowdisplayskip}{12pt}
-\setlength{\abovedisplayshortskip}{12pt}
-\setlength{\belowdisplayshortskip}{12pt}
-\AtBeginDocument{%
-  \setlength{\abovedisplayskip}{12pt}%
-  \setlength{\belowdisplayskip}{12pt}%
-  \setlength{\abovedisplayshortskip}{12pt}%
-  \setlength{\belowdisplayshortskip}{12pt}%
+% ---------------------------------------------------------------------
+% Symmetric display-equation spacing.
+%
+% Two independent problems, and BOTH have to be fixed or the gap above a
+% display will not match the gap below it.
+%
+% (1) The four display-skip lengths. The short-skip variants kick in when
+% the line immediately preceding the display is short, and by
+% article-class default \abovedisplayshortskip is 0pt while
+% \belowdisplayshortskip is 7pt; setspace then rescales all four by the
+% linestretch. \qkitdisplayskips pins them to one common value, applied
+% at load time, again at \AtBeginDocument (after setspace has had its
+% say), and once more at every display open via \everydisplay and the
+% per-environment hooks below, so amsmath cannot reset them locally.
+%
+% (2) The empty paragraph above the display -- the bigger of the two, and
+% the reason (1) alone never made the spacing look symmetric. Pandoc
+% always emits a display as its own block, separated from the prose by a
+% blank line, so LaTeX meets \begin{equation} in VERTICAL mode. TeX opens
+% a paragraph, finds it empty, and contributes a full \baselineskip of
+% interline glue -- 28.8pt at `linestretch: 2` -- on top of
+% \abovedisplayskip. Nothing below the display matches it, so the gap
+% above was ~29pt larger no matter how the four skips were set.
+%
+% \qkitdisplayfix cancels exactly that one \baselineskip. It fires only
+% in vertical mode, so a display that genuinely continues a paragraph
+% (no blank line before it, as in hand-written LaTeX) is left alone, and
+% only when \prevdepth shows interline glue will actually be inserted --
+% at the top of a page there is no empty-paragraph glue to cancel.
+% The cancellation is exact: the previous line's depth appears on both
+% sides of the arithmetic and drops out, so the correction does not
+% depend on whether that line happened to end in a descender.
+% ---------------------------------------------------------------------
+\newlength{\qkitdisplayskip}
+\setlength{\qkitdisplayskip}{12pt}
+\newcommand{\qkitdisplayskips}{%
+  \setlength{\abovedisplayskip}{\qkitdisplayskip}%
+  \setlength{\belowdisplayskip}{\qkitdisplayskip}%
+  \setlength{\abovedisplayshortskip}{\qkitdisplayskip}%
+  \setlength{\belowdisplayshortskip}{\qkitdisplayskip}%
 }
-\everydisplay=\expandafter{\the\everydisplay
-  \abovedisplayskip=12pt\relax
-  \belowdisplayskip=12pt\relax
-  \abovedisplayshortskip=12pt\relax
-  \belowdisplayshortskip=12pt\relax
+\makeatletter
+\newcommand{\qkitdisplayfix}{%
+  \qkitdisplayskips
+  \ifvmode\ifdim\prevdepth>-\@m pt \vskip-\baselineskip\fi\fi
 }
-\BeforeBeginEnvironment{equation}{%
-  \setlength{\abovedisplayskip}{12pt}%
-  \setlength{\belowdisplayskip}{12pt}%
-  \setlength{\abovedisplayshortskip}{12pt}%
-  \setlength{\belowdisplayshortskip}{12pt}%
-}
-\BeforeBeginEnvironment{equation*}{%
-  \setlength{\abovedisplayskip}{12pt}%
-  \setlength{\belowdisplayskip}{12pt}%
-  \setlength{\abovedisplayshortskip}{12pt}%
-  \setlength{\belowdisplayshortskip}{12pt}%
-}
-\BeforeBeginEnvironment{align}{%
-  \setlength{\abovedisplayskip}{12pt}%
-  \setlength{\belowdisplayskip}{12pt}%
-}
-\BeforeBeginEnvironment{align*}{%
-  \setlength{\abovedisplayskip}{12pt}%
-  \setlength{\belowdisplayskip}{12pt}%
-}
+\makeatother
+\qkitdisplayskips
+\AtBeginDocument{\qkitdisplayskips}
+\everydisplay=\expandafter{\the\everydisplay \qkitdisplayskips}
+% amsmath defines \[ ... \] as the equation* environment, so the
+% equation* hook also covers unlabelled `$$ ... $$` displays.
+\BeforeBeginEnvironment{equation}{\qkitdisplayfix}
+\BeforeBeginEnvironment{equation*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{align}{\qkitdisplayfix}
+\BeforeBeginEnvironment{align*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{gather}{\qkitdisplayfix}
+\BeforeBeginEnvironment{gather*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{multline}{\qkitdisplayfix}
+\BeforeBeginEnvironment{multline*}{\qkitdisplayfix}
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]

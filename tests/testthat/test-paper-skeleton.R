@@ -54,6 +54,25 @@ test_that("both preambles hook longtable as well as tabular", {
   }
 })
 
+test_that("both preambles cancel the empty paragraph above a display", {
+  # Same two-preamble parity bug as the longtable hook: preamble-appendix.tex
+  # only pinned the four display skips, so its equations kept the extra
+  # \baselineskip that TeX contributes above a display begun in vertical mode.
+  d <- paper_dir()
+  for (f in c("preamble.tex", "preamble-appendix.tex")) {
+    tex <- readLines(file.path(d, f), warn = FALSE)
+    expect_true(
+      any(grepl("newcommand{\\qkitdisplayfix}", tex, fixed = TRUE)),
+      info = paste(f, "does not define \\qkitdisplayfix")
+    )
+    expect_true(
+      any(grepl("BeforeBeginEnvironment{equation}{\\qkitdisplayfix}",
+                tex, fixed = TRUE)),
+      info = paste(f, "does not hook equation with \\qkitdisplayfix")
+    )
+  }
+})
+
 test_that("both preambles set the journal caption style", {
   d <- paper_dir()
   for (f in c("preamble.tex", "preamble-appendix.tex")) {
