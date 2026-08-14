@@ -45,19 +45,19 @@ $endif$
 
 % tabularx with two X columns, NOT tabular* with l/r columns.
 %
-% The py4Fin original used `tabular*` with \extracolsep{\fill}, which
-% cannot wrap: an l column and an r column are set at their natural width,
-% so the moment one row's two values are together wider than \textwidth
-% the row runs past the right margin. "Office Hours: Tuesdays 14:00--16:00,
-% or by appointment" against "Class Hours: Monday and Wednesday,
-% 10:30--11:50" overflowed by 54.8pt on the stock values alone -- and the
-% only symptom is an Overfull \hbox in the log, since nothing in the PDF
-% text says the words are outside the margin.
+% `tabular*` with \extracolsep{\fill} is the obvious way to build this and
+% it cannot wrap: an l column and an r column are set at their natural
+% width, so the moment one row's two values are together wider than
+% \textwidth the row runs past the right margin. "Office Hours: Tuesdays
+% 14:00--16:00, or by appointment" against "Class Hours: Monday and
+% Wednesday, 10:30--11:50" overflowed by 54.8pt on the stock values alone
+% -- and the only symptom is an Overfull \hbox in the log, since nothing
+% in the PDF text says the words are outside the margin.
 %
 % Two X columns each take half of \textwidth and wrap. \raggedright on the
-% left and \raggedleft on the right keeps the py4Fin look -- labels flush
-% to the outer margins, whitespace collecting in the middle -- while long
-% values now spill onto a second line instead of off the page.
+% left and \raggedleft on the right keeps the intended look -- labels
+% flush to the outer margins, whitespace collecting in the middle -- while
+% long values now spill onto a second line instead of off the page.
 %
 % \arraybackslash restores \\ as the row separator, which \raggedright and
 % \raggedleft otherwise redefine to their line-break meaning.

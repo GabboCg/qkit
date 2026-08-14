@@ -181,12 +181,13 @@ qkit::install_extension(path = ".")
 ### Syllabus (qkit Syllabus)
 
 - 11pt `article`, 1in margins, Palatino (`mathpazo`), unnumbered
-  sections — ported from the R Markdown syllabus template in
-  [py4Fin](https://github.com/gabbocg/py4Fin)
+  sections
 - Course-information block driven entirely from YAML: `email:`,
   `web:`, `officehours:`, `classhours:`, `office:`, `classroom:`,
   each falling back to *TBD* when omitted, rendered as a full-width
-  two-column rule-terminated table under the title
+  two-column rule-terminated table under the title. Built on
+  `tabularx`, so long values wrap onto a second line instead of
+  running past the right margin
 - `term:` instead of `date:` for the academic term, so "Fall 2026"
   survives Quarto's date normalisation
 - Running head carrying the course title and term, and a
