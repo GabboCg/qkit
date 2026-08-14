@@ -81,7 +81,10 @@ qkit-beamer defines four custom colors you can use with La\TeX\ commands:
 
 Section break slides use a yellow background automatically.
 
-Use them inline: `\textcolor{blue}{your text}` or `\color{red}{your text}`
+Use them inline:
+
+- `\textcolor{blue}{text}` --- colors one fragment
+- `\color{red}{...}` --- colors to the end of the group
 
 ## Colored Math
 
@@ -112,6 +115,13 @@ Bullet points use dashes with custom spacing:
 3. Third item with nested bullets:
    - Sub-item one
    - Sub-item two
+
+$$
+\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
+$$
+
+1. A display equation keeps the same space above and below it,
+   next to a paragraph, an itemize or an enumerate.
 
 # Callouts
 
@@ -207,8 +217,6 @@ For the title slide, the `thanks` YAML field creates a dagger footnote automatic
 ## Vertical Spacing
 
 Use La\TeX\ spacing commands for fine control:
-
-\vspace{0.5cm}
 
 - `\vspace{0.5cm}` --- vertical space
 - `\medskip` --- medium vertical skip

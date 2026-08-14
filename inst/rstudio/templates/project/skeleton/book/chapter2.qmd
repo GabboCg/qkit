@@ -1,11 +1,100 @@
-# Second Chapter {#sec-chapter2}
+# Figures, Tables, and the Index {#sec-chapter2}
 
-A second chapter in Part One. Mirrors the structure of @sec-chapter1.
+The floats and the back-of-book index, which is the one feature of this
+template that needs a little care.
 
-## Topic A
+## Figures
 
-Body text.
+An image with an identifier becomes a numbered, referenceable figure:
 
-## Topic B
+``` markdown
+![A placeholder figure.](example-figure.pdf){#fig-example width=70%}
+```
 
-Body text.
+![A placeholder figure.](example-figure.pdf){#fig-example width=70%}
+
+@fig-example refers to it. `width=` accepts a percentage of the text
+width, and `fig-align="center"` centres a figure narrower than the text
+block. PDF and PNG both work; vector PDF is better for line art.
+
+## Tables
+
+A pipe table with a caption line becomes a numbered table. The caption
+carries the identifier:
+
+| Variable        |  Mean |    SD |
+|:----------------|------:|------:|
+| Outcome $y$     |  0.50 |  0.10 |
+| Regressor $x$   |  0.00 |  1.00 |
+| Control $z$     |  0.00 |  1.00 |
+
+: Descriptive statistics. {#tbl-summary}
+
+@tbl-summary refers to it. Colons in the header separator set the column
+alignment: `:---` left, `---:` right, `:---:` centred. The template loads
+**booktabs**, so rules come out at the right weights without any manual
+`\hline`.
+
+Long tables split across pages automatically. If a table is wider than the
+text block, set the column widths explicitly with `tbl-colwidths`:
+
+``` markdown
+: A wide table. {#tbl-wide tbl-colwidths="[60,20,20]"}
+```
+
+## The index
+
+The template loads **makeidx** and prints the index at the end of the
+book. Nothing appears there until you mark terms. `\index{}` is raw LaTeX
+and goes immediately after the word it indexes, with no space:
+
+``` markdown
+The assumption of stationarity\index{stationarity} is maintained
+throughout, as is linearity\index{models!linear}.
+```
+
+The assumption of stationarity\index{stationarity} is maintained
+throughout, as is linearity\index{models!linear}.
+
+An exclamation mark makes a subentry, so `models!linear` files "linear"
+under a "models" heading. The index is built during the render --- there
+is no separate `makeindex` step to run --- and it lists the page each
+marked term fell on, which is why the entries above point at this page.
+
+`\index{}` is dropped silently in the HTML build rather than printed as
+stray text, so marking terms is safe even if HTML is your main output.
+
+## Code
+
+Fenced blocks are set in Source Code Pro and are not executed unless you
+use an executable chunk:
+
+``` r
+fit <- lm(mpg ~ wt + hp, data = mtcars)
+summary(fit)
+```
+
+For output that runs at render time, use a `{r}` chunk. That needs
+**knitr**, and the file extension stays `.qmd`.
+
+## Content for one format only
+
+Some material belongs in one output and not the other --- a full-page
+LaTeX table in print, an interactive widget on the web:
+
+``` markdown
+::: {.content-visible when-format="pdf"}
+This paragraph appears only in the PDF.
+:::
+```
+
+::: {.content-visible when-format="pdf"}
+This paragraph appears only in the PDF, which is where you are reading it.
+:::
+
+::: {.content-visible when-format="html"}
+This paragraph appears only in the HTML build.
+:::
+
+The dedication page in `index.qmd` uses the same mechanism, with a
+centred LaTeX block for print and a styled div for the web.

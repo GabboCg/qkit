@@ -3,9 +3,12 @@ project:
 
 book:
   title: "Your Book Title"
-  subtitle: |
-    \bigskip
-    Your Book Subtitle
+  # Keep this on ONE line. A block scalar puts the subtitle's first line
+  # break through to LaTeX as \\, and in before-body.tex the subtitle is
+  # the start of its own group, so \\ there fails with "There's no line
+  # here to end" and no PDF is produced. Space above the subtitle is set
+  # by the \vspace in before-body.tex, not from here.
+  subtitle: "Your Book Subtitle"
   author: "Your Name"
   date: today
   date-format: "MMMM YYYY"
@@ -37,7 +40,20 @@ format:
     documentclass: krantz
     fontsize: 12pt
     colorlinks: true
-    papersize: a4paper
+    # "a4", not "a4paper": Quarto appends "paper" itself, so a4paper here
+    # reaches krantz.cls as the unknown option a4paperpaper, which is
+    # silently ignored and leaves the book on the class default, letter.
+    papersize: a4
+    # krantz.cls defaults to twoside + openright, so the title, every
+    # chapter, every part divider and the index open on a right-hand page
+    # and LaTeX inserts a blank verso whenever the previous page was odd
+    # (9 of 29 pages in the stock skeleton). That is correct for print.
+    # For a draft to read on screen, uncomment the line below: 20 pages,
+    # none blank. openany alone is not enough -- krantz calls
+    # \cleardoublepage directly, and that keeps forcing a recto until the
+    # document is one-sided. The cost is that running heads stop
+    # alternating; the text block does not move.
+    # classoption: [oneside, openany]
     template-partials:
       - before-body.tex
     include-in-header:
@@ -66,6 +82,50 @@ format:
 
         \usepackage{enumitem}
         \setlist{leftmargin=10mm}
+
+        % Symmetric display-equation spacing.
+        %
+        % Two things are needed. The four display skips are pinned to one
+        % value -- the short-skip variants apply when the line before the
+        % display is short, and their class defaults differ from the long
+        % ones. Then \qkitdisplayfix cancels the empty paragraph above the
+        % display: Pandoc always emits a display as its own block, so LaTeX
+        % meets \begin{equation} in VERTICAL mode, opens a paragraph, finds
+        % it empty, and contributes interline glue that nothing below the
+        % display matches. Before this the gap was 36.1pt above and 28.1pt
+        % below; it is 33.6pt on both sides now.
+        %
+        % \ifvmode leaves a hand-written display that continues a paragraph
+        % alone; the \prevdepth guard subtracts nothing at the top of a page
+        % where there is no interline glue to cancel. amsmath defines
+        % \[ ... \] as equation*, so that hook also covers unlabelled
+        % `$$ ... $$`.
+        \usepackage{etoolbox}
+        \newlength{\qkitdisplayskip}
+        \setlength{\qkitdisplayskip}{12pt}
+        \newcommand{\qkitdisplayskips}{%
+          \setlength{\abovedisplayskip}{\qkitdisplayskip}%
+          \setlength{\belowdisplayskip}{\qkitdisplayskip}%
+          \setlength{\abovedisplayshortskip}{\qkitdisplayskip}%
+          \setlength{\belowdisplayshortskip}{\qkitdisplayskip}%
+        }
+        \makeatletter
+        \newcommand{\qkitdisplayfix}{%
+          \qkitdisplayskips
+          \ifvmode\ifdim\prevdepth>-\@m pt \vskip-\baselineskip\fi\fi
+        }
+        \makeatother
+        \qkitdisplayskips
+        \AtBeginDocument{\qkitdisplayskips}
+        \everydisplay=\expandafter{\the\everydisplay \qkitdisplayskips}
+        \BeforeBeginEnvironment{equation}{\qkitdisplayfix}
+        \BeforeBeginEnvironment{equation*}{\qkitdisplayfix}
+        \BeforeBeginEnvironment{align}{\qkitdisplayfix}
+        \BeforeBeginEnvironment{align*}{\qkitdisplayfix}
+        \BeforeBeginEnvironment{gather}{\qkitdisplayfix}
+        \BeforeBeginEnvironment{gather*}{\qkitdisplayfix}
+        \BeforeBeginEnvironment{multline}{\qkitdisplayfix}
+        \BeforeBeginEnvironment{multline*}{\qkitdisplayfix}
 
     include-after-body:
       text: |

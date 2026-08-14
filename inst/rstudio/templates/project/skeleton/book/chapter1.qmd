@@ -1,21 +1,119 @@
-# First Chapter {#sec-chapter1}
+# Writing With This Template {#sec-chapter1}
 
-The first substantive chapter of Part One. Body text goes here.
+This chapter and @sec-chapter2 document the template itself. Replace both
+with your own chapters once you have the hang of it; nothing here is
+load-bearing.
 
-## A section
+## Where things go
 
-Section body. Equations render via LaTeX:
+`_quarto.yml` is the table of contents. The `chapters:` list controls both
+the order of the book and which files are rendered at all --- a `.qmd` that
+is not listed is ignored:
+
+``` yaml
+chapters:
+  - index.qmd          # front matter: preface, dedication
+  - intro.qmd
+  - part: part-one.qmd # a part divider page
+    chapters:
+      - chapter1.qmd
+      - chapter2.qmd
+  - references.qmd
+appendices:
+  - appendix.qmd       # lettered separately from the main matter
+```
+
+A `part:` entry takes its own `.qmd` file, whose body becomes the text on
+the divider page. Appendices go in the separate `appendices:` list so that
+Quarto numbers them A, B, C rather than continuing the chapter count.
+
+`index.qmd` is the front matter. It holds the preface, an optional
+dedication page (commented out at the top of the file --- delete the
+wrapper to enable it), and the `\mainmatter` switch that turns roman page
+numbering into arabic. Anything above that switch is front matter and stays
+unnumbered.
+
+## Cross-references
+
+Every referenceable thing takes an identifier prefixed by its type, and
+`@id` inserts both the label and its number:
+
+| Prefix | Refers to | Example |
+|--------|-----------|---------|
+| `sec-` | Chapters and sections | `@sec-intro` |
+| `eq-`  | Display equations | `@eq-linear` |
+| `fig-` | Figures | `@fig-example` |
+| `tbl-` | Tables | `@tbl-summary` |
+| `thm-` | Theorems (and `lem-`, `cor-`, `def-`, `exm-`, `exr-`) | `@thm-ols` |
+
+**Do not write the word "Section" in front of a `@sec-` reference.** Quarto
+supplies the prefix, so `Section @sec-intro` renders as "Section Section
+1". Write `@sec-intro` and let it produce "Section 1". The same applies to
+`@fig-`, `@tbl-` and `@thm-`: never "Table @tbl-summary", just
+`@tbl-summary`.
+
+To write a reference in a sentence that needs a lower-case word, use
+`-@sec-intro`, which prints the bare number.
+
+## Equations
+
+A display equation takes a label after the closing `$$`:
 
 $$
 y = X\beta + \varepsilon
 $$ {#eq-linear}
 
-with @eq-linear used inline for cross-references.
+and @eq-linear then refers to it. Drop the `{#eq-...}` and the equation
+renders unnumbered. The template sets the space above a display equal to
+the space below it (33.6pt each at this font size); the four LaTeX display
+skips and the stray interline glue above a display are both handled in the
+`include-in-header` block of `_quarto.yml`, so you should not need
+`\vspace` around an equation.
 
-## A second section
+Multi-line displays go in an `aligned` block:
 
-::: {.callout-note}
-Use Quarto callouts (note, warning, tip, important, caution) for asides.
+$$
+\begin{aligned}
+\hat{\beta} &= (X'X)^{-1}X'y \\
+\hat{\sigma}^2 &= \frac{1}{n-k}\, \hat{\varepsilon}'\hat{\varepsilon}
+\end{aligned}
+$$ {#eq-ols}
+
+## Theorems and proofs
+
+Theorem environments are fenced divs whose identifier sets the kind. A
+`##` heading inside the div becomes the parenthesised name:
+
+::: {#thm-gauss}
+## Gauss--Markov
+
+Under the classical assumptions, the OLS estimator in @eq-ols is the best
+linear unbiased estimator of $\beta$.
 :::
 
-Citations go in BibTeX form: @example2025.
+::: {.proof}
+Left to the reader, as is traditional.
+:::
+
+`#thm-` gives Theorem, and `#lem-`, `#cor-`, `#def-`, `#exm-` and `#exr-`
+give Lemma, Corollary, Definition, Example and Exercise. Each counts
+within its own chapter. `::: {.proof}` is unnumbered and ends with the
+usual box; `.remark` and `.solution` work the same way.
+
+## Callouts
+
+::: {.callout-note}
+Callouts come in five flavours: note, warning, tip, important and caution.
+They render as framed asides in the PDF and as coloured boxes in HTML.
+:::
+
+## Citations
+
+Citations resolve against `references.bib`. `@example2025` produces an
+in-text citation --- @example2025 --- and `[@example2025]` a parenthetical
+one [@example2025]. The bibliography is emitted wherever `references.qmd`
+sits in the `chapters:` list.
+
+This book uses Quarto's default citation processor, so a journal or
+publisher style is a one-line change: add `csl: your-style.csl` next to
+`bibliography:` in `_quarto.yml`.

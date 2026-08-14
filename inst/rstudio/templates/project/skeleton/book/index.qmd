@@ -37,6 +37,19 @@ Conventions used in the book: code in monospace, package names in bold,
 references in citation form. Replace this section with whatever conventions
 your book follows.
 
+## About this template {.unnumbered .unlisted}
+
+The two chapters of Part One document the template rather than a subject:
+structure, cross-references, equations and theorems in the first, figures,
+tables and the back-of-book index in the second. Read them once, then
+delete them --- they are demo content, and nothing else depends on them.
+
+Render the book with `quarto render` from the project root, which builds
+every format in `_quarto.yml`, or `quarto render --to pdf` for print only.
+Output lands in `_book/`, with the PDF named after the book title. In
+RStudio the Build tab's Render Book button does the same thing; its
+dropdown selects a single format.
+
 ## Acknowledgments {.unnumbered .unlisted}
 
 Acknowledgments go here.

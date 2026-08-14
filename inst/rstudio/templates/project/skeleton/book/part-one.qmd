@@ -2,3 +2,8 @@
 
 A short paragraph introducing the chapters in this part of the book.
 Quarto renders this as a part divider page in the PDF.
+
+The two chapters that follow document the template: @sec-chapter1 covers
+structure, cross-references, equations and theorems, and @sec-chapter2
+covers figures, tables and the index. Delete them once your own chapters
+take their place.

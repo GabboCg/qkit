@@ -1,4 +1,20 @@
 # Appendix: Additional Material {#sec-appendix}
 
 Appendix content. Quarto automatically labels and numbers appendices
-distinctly from main-matter chapters.
+distinctly from main-matter chapters: this one is Appendix A, and its
+sections, figures, tables and equations take the letter with them.
+
+## A section in the appendix
+
+Numbering continues within the appendix, so this section is A.1 and a
+display equation here is (A.1):
+
+$$
+\mathrm{Var}(\hat{\beta}) = \sigma^2 (X'X)^{-1}
+$$ {#eq-app-var}
+
+@eq-app-var behaves like any other cross-reference.
+
+Add further appendices by listing them under `appendices:` in
+`_quarto.yml`; each becomes B, C, and so on. Everything documented in
+@sec-chapter1 and @sec-chapter2 works here unchanged.

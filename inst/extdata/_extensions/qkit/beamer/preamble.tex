@@ -7,25 +7,136 @@
 \setbeamertemplate{itemize items}[circle]
 \setbeamersize{text margin left=2.25em, text margin right=2.25em}
 
-\let\OLDitemize\itemize
-\renewcommand\itemize{
-    \OLDitemize\addtolength{\itemsep}{3pt plus 1pt minus 1pt}
-}
-\let\OLDenumerate\enumerate
-\renewcommand\enumerate{
-    \OLDenumerate\addtolength{\itemsep}{3pt plus 1pt minus 1pt}
-}
-
 \usepackage{orcidlink}
 \usepackage{amsmath}
 \DeclareMathOperator*{\argmax}{argmax}
 
+% A slide is only ~46 characters wide at the default font size, and a
+% code line that overruns it does not wrap -- it runs off the right edge
+% of the frame and off the page. Quarto builds highlighted code blocks
+% as fancyvrb Verbatim environments, so \fvset makes them wrap instead.
+% breakanywhere is needed because the long lines are usually paths or
+% LaTeX commands with no spaces to break at. This is a safety net, not
+% a licence: wrapped code still reads badly on a slide, so keep code
+% samples short.
+%
+% fontsize sets the code font for highlighted blocks. \footnotesize fits
+% roughly 65 characters across a 4:3 frame (\small fits ~55,
+% \scriptsize ~80), which covers most realistic code lines without
+% wrapping and still reads on a projector. Inline `code` is \texttt, not
+% fancyvrb, so it keeps the body size -- that is deliberate, a smaller
+% inline size looks broken mid-sentence.
+\usepackage{fvextra}
+\fvset{fontsize=\footnotesize, breaklines=true, breakanywhere=true}
+
+% ---------------------------------------------------------------------
+% List spacing.
+%
+% \qkitlistsep is the space BETWEEN items. At the TOP level \topsep is
+% zero, so the space around a list equals the space between two
+% paragraphs. That keeps one rhythm on a slide: blocks (paragraph, list)
+% are separated by the paragraph skip, items inside a list by a smaller
+% \qkitlistsep, and display equations by \qkitdisplayskip (below)
+% regardless of what sits next to them. Top-level \topsep is the length
+% that property hangs on -- give it a value and a display equation
+% adjacent to a list picks up that value on top of \qkitdisplayskip,
+% while one adjacent to a paragraph does not.
+%
+% NESTED lists do take \topsep, because they are not the boundary
+% between two blocks: a nested itemize opens flush under the text of its
+% parent item, and at zero \topsep it sat one line below it, tighter
+% than the gap between its own items. \qkitlistsep there makes entering
+% a nested list cost exactly what stepping to the next item costs.
+% Only the opening gap moves -- returning from the nested list to the
+% next parent item is set by the parent's \itemsep and is unaffected.
+%
+% \tightlist is why this has to be done here. Pandoc emits it right
+% after \begin{itemize} / \begin{enumerate} for every list whose source
+% has no blank lines between items -- which is nearly every list -- and
+% its default definition sets \itemsep to 0pt. Anything that adjusts
+% \itemsep on the way INTO the list (the \addtolength{\itemsep} hack
+% this replaced) is therefore undone a token later, which is why that
+% hack had no visible effect. Quarto declares \tightlist with
+% \providecommand ahead of this preamble, so redefining it here wins;
+% the \providecommand below is a no-op guard in case a future Quarto
+% stops emitting it at all.
+%
+% \@listi / \@listii / \@listiii carry the same \itemsep so that a
+% NON-tight list -- one with blank lines between its items, which never
+% sees \tightlist -- is spaced identically. They otherwise keep beamer's
+% own values from beamerbaselocalstructure.sty.
+% ---------------------------------------------------------------------
+\newlength{\qkitlistsep}
+\setlength{\qkitlistsep}{4pt}
+\providecommand{\tightlist}{}
+\renewcommand{\tightlist}{%
+  \setlength{\itemsep}{\qkitlistsep}%
+  \setlength{\parskip}{0pt}%
+}
 \makeatletter
+\def\@listi{\leftmargin\leftmargini
+            \topsep    \z@ \@plus\p@
+            \parsep    0\p@
+            \itemsep   \qkitlistsep}
+\let\@listI\@listi
 \def\@listii{\leftmargin\leftmarginii
-              \topsep    1ex
+             \topsep    \qkitlistsep
+             \parsep    0\p@   \@plus\p@
+             \itemsep   \qkitlistsep}
+\def\@listiii{\leftmargin\leftmarginiii
+              \topsep    \qkitlistsep
               \parsep    0\p@   \@plus\p@
-              \itemsep   \parsep}
+              \itemsep   \qkitlistsep}
 \makeatother
+
+% ---------------------------------------------------------------------
+% Display-equation spacing: the same gap above and below, and the same
+% gap whether the display sits next to a paragraph, an itemize, or an
+% enumerate.
+%
+% Two things are needed. First the four display skips are pinned to one
+% value -- the short-skip variants apply when the preceding line is
+% short, and by default \abovedisplayshortskip is 0pt, so a display
+% after a short line hugs it. Second, and much the larger effect,
+% \qkitdisplayfix cancels the empty paragraph above the display: Pandoc
+% always emits a display as its own block, so LaTeX meets
+% \begin{equation} in VERTICAL mode, opens a paragraph, finds it empty,
+% and contributes a full \baselineskip that nothing below the display
+% matches. The guards mean a display that genuinely continues a
+% paragraph (hand-written LaTeX, no blank line) is left alone, and
+% nothing is subtracted at the top of a frame where there is no
+% interline glue to cancel.
+%
+% Measured on a 4:3 frame: 30.3pt above and 30.2pt below, identical
+% after a paragraph, an itemize and an enumerate.
+% ---------------------------------------------------------------------
+\newlength{\qkitdisplayskip}
+\setlength{\qkitdisplayskip}{10pt}
+\newcommand{\qkitdisplayskips}{%
+  \setlength{\abovedisplayskip}{\qkitdisplayskip}%
+  \setlength{\belowdisplayskip}{\qkitdisplayskip}%
+  \setlength{\abovedisplayshortskip}{\qkitdisplayskip}%
+  \setlength{\belowdisplayshortskip}{\qkitdisplayskip}%
+}
+\makeatletter
+\newcommand{\qkitdisplayfix}{%
+  \qkitdisplayskips
+  \ifvmode\ifdim\prevdepth>-\@m pt \vskip-\baselineskip\fi\fi
+}
+\makeatother
+\qkitdisplayskips
+\AtBeginDocument{\qkitdisplayskips}
+\everydisplay=\expandafter{\the\everydisplay \qkitdisplayskips}
+% amsmath defines \[ ... \] as the equation* environment, so the
+% equation* hook also covers unlabelled `$$ ... $$` displays.
+\BeforeBeginEnvironment{equation}{\qkitdisplayfix}
+\BeforeBeginEnvironment{equation*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{align}{\qkitdisplayfix}
+\BeforeBeginEnvironment{align*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{gather}{\qkitdisplayfix}
+\BeforeBeginEnvironment{gather*}{\qkitdisplayfix}
+\BeforeBeginEnvironment{multline}{\qkitdisplayfix}
+\BeforeBeginEnvironment{multline*}{\qkitdisplayfix}
 
 \let\olditem\item
 \renewcommand\item{\olditem\justifying}
