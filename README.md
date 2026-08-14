@@ -10,9 +10,9 @@
 
 ## Overview
 
-**qkit** is a set of personal [Quarto](https://quarto.org) templates with RStudio integration. It ships four template types — a Beamer presentation, an academic CV, a Quarto book project, and a minimalist academic paper — each with a sensible LaTeX preamble, ORCID-aware author handling, and a one-click *File > New Project* entry in RStudio.
+**qkit** is a set of personal [Quarto](https://quarto.org) templates with RStudio integration. It ships five template types — a Beamer presentation, an academic CV, a Quarto book project, a minimalist academic paper, and a course syllabus — each with a sensible LaTeX preamble, ORCID-aware author handling, and a one-click *File > New Project* entry in RStudio.
 
-Inspired by [beamer-tips](https://github.com/paulgp/beamer-tips), adapted for a Quarto-based workflow and extended with three more formats.
+Inspired by [beamer-tips](https://github.com/paulgp/beamer-tips), adapted for a Quarto-based workflow and extended with four more formats.
 
 ## Installation
 
@@ -34,15 +34,17 @@ templates.
 | `cv` | qkit CV | LuaLaTeX one-pager | `index.qmd` + `_extensions/qkit/` |
 | `book` | qkit Book | XeLaTeX book (Krantz class) | full multi-file Quarto book project |
 | `paper` | qkit Paper | XeLaTeX article + Internet Appendix | `index.qmd`, `internet-appendix.qmd`, `title.tex`, `preamble.tex`, `preamble-appendix.tex`, `mark-last-author.lua`, `eq-parens.lua`, `float-notes.lua`, `example-figure.pdf`, `references.bib`, `references-appendix.bib` |
+| `syllabus` | qkit Syllabus | pdfLaTeX article (Palatino) | `index.qmd`, `preamble.tex`, `before-body.tex`, `references.bib`, `logo.pdf` |
 
-The Beamer and CV formats are backed by a Quarto extension; Book and
-Paper are self-contained project scaffolds (no extension installed).
+The Beamer and CV formats are backed by a Quarto extension; Book,
+Paper and Syllabus are self-contained project scaffolds (no extension
+installed).
 
 ## Usage
 
 ### From RStudio
 
-*File > New Project > New Directory*, pick one of the four `qkit`
+*File > New Project > New Directory*, pick one of the five `qkit`
 entries, fill in the wizard fields, and click *Create*. RStudio
 opens the scaffolded `index.qmd` in the editor.
 
@@ -53,6 +55,7 @@ qkit::create_project("my-slides", type = "beamer", title = "Talk Title")
 qkit::create_project("my-cv",     type = "cv",     author = "Your Name")
 qkit::create_project("my-book",   type = "book",   title = "Book Title", author = "Your Name")
 qkit::create_project("my-paper",  type = "paper",  title = "Paper Title")
+qkit::create_project("my-course", type = "syllabus", title = "Course Title", author = "Your Name")
 ```
 
 To render an already-scaffolded document:
@@ -64,8 +67,8 @@ qkit::qkit_preview("my-slides/index.qmd")   # live-reload preview
 
 `qkit_render()` auto-installs the qkit Quarto extension into the
 project directory if it isn't already there (only relevant for
-`beamer` and `cv` — the book and paper formats don't use the
-extension).
+`beamer` and `cv` — the book, paper and syllabus formats don't use
+the extension).
 
 To install the qkit Quarto extension manually into any existing
 Quarto project:
@@ -82,6 +85,7 @@ qkit::install_extension(path = ".")
 | CV     | `qkit-pdf` |
 | Book   | configured in `_quarto.yml`'s `format: pdf:` block (no extension key) |
 | Paper  | configured in `index.qmd`'s `format: pdf:` block (no extension key) |
+| Syllabus | configured in `index.qmd`'s `format: pdf:` block (no extension key) |
 
 ## Per-template features
 
@@ -164,14 +168,43 @@ qkit::install_extension(path = ".")
   the YAML header
 - References on a new page after the Conclusion (and at the end
   of the Internet Appendix)
-- Pandoc `citeproc` for bibliographies (Chicago author-date by
-  default)
+- natbib/BibTeX for bibliographies (`apalike`, with
+  `\setcitestyle{aysep={}}` giving Chicago-style author-date), so
+  both halves of a citation are hyperlinked
 - Body is a self-documenting Quarto tutorial: each section walks
   through a Quarto/Markdown feature (cross-reference prefixes,
   labeled equations, theorem environments, citation styles,
   callouts, knitr table chunks, pipe tables, definition lists,
   raw `{=tex}`/`{=html}` blocks, `.content-visible
   when-format=...` conditional content)
+
+### Syllabus (qkit Syllabus)
+
+- 11pt `article`, 1in margins, Palatino (`mathpazo`), unnumbered
+  sections — ported from the R Markdown syllabus template in
+  [py4Fin](https://github.com/gabbocg/py4Fin)
+- Course-information block driven entirely from YAML: `email:`,
+  `web:`, `officehours:`, `classhours:`, `office:`, `classroom:`,
+  each falling back to *TBD* when omitted, rendered as a full-width
+  two-column rule-terminated table under the title
+- `term:` instead of `date:` for the academic term, so "Fall 2026"
+  survives Quarto's date normalisation
+- Running head carrying the course title and term, and a
+  `page / total` footer via `lastpage`; page 1 takes the page number
+  but neither rule nor running head
+- Institution logo above the title (`logo:`, `logo-width:`), on by
+  default via a self-labelling `logo.pdf` placeholder — swap the file,
+  keep the name
+- natbib/BibTeX reading list generated from every entry in
+  `references.bib` via `nocite: "@*"`, headed by `\refname`; all five
+  shipped entries are invented placeholders
+- pdfLaTeX with the typewriter and sans families forced to Latin
+  Modern, so code spans embed as Type 1 rather than Type 3 bitmaps
+- Body is a self-documenting English syllabus: description,
+  objectives, prerequisites and materials, methodology, grading, a
+  dated week-by-week schedule table, a nested course outline, and
+  policy subsections (academic integrity, late work, attendance,
+  accessibility)
 
 ## Getting help
 

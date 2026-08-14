@@ -1,0 +1,248 @@
+---
+title: "ECON 000 --- Your Course Title"
+author: "Your Name"
+
+# `term:`, not `date:`. Quarto parses `date:` as a calendar date and
+# normalises it, so "Fall 2026" would render as 2026-01-01. before-body.tex
+# passes `term:` straight to LaTeX's \date{}, so it prints as written --
+# in the title block and in the running head.
+term: "Fall 2026"
+
+# Course information block. Every key below is optional -- anything you
+# omit renders as TBD in the table under the title, so the block keeps its
+# shape while the term is still being scheduled.
+#
+# `web:` takes a BARE host. before-body.tex supplies the https:// prefix,
+# so writing a full URL here produces https://https://... in the link.
+email: your.name@example.edu
+web: canvas.example.edu
+officehours: "Tuesdays 14:00--16:00, or by appointment"
+classhours: "Monday and Wednesday, 10:30--11:50"
+office: "Social Sciences Building, Office 512"
+classroom: "Social Sciences Building, Room 203"
+
+# Institution logo, centred above the title. logo.pdf is a placeholder --
+# swap in your own file (PDF, PNG or JPG) and keep the name, or point this
+# key elsewhere. Deleting the key drops the logo and the title block
+# closes up; deleting the FILE while this key still points at it is a hard
+# render error, not a warning.
+logo: logo.pdf
+# logo-width: '0.30\textwidth'
+
+# The reading list at the end is generated from every entry in
+# references.bib, because of `nocite: "@*"`. Drop that key to list only
+# the works actually cited in the body.
+bibliography: references.bib
+nocite: |
+  @*
+
+# Citations go through natbib/BibTeX rather than Quarto's default
+# CSL/citeproc, matching the qkit paper template. natbib hyperlinks both
+# halves of an author-year citation, so the whole of "Campbell and Shiller
+# (1988)" is clickable, and it means titles in references.bib have to be
+# double-braced. `apalike` is deliberate: it ships in TeX Live base, so it
+# resolves under the TinyTeX install Quarto uses as well as a full
+# TeX Live. The heading over the generated list is \refname, set in
+# preamble.tex -- Quarto's `reference-section-title` does nothing here.
+cite-method: natbib
+biblio-style: apalike
+natbiboptions: round,authoryear
+link-citations: true
+
+format:
+  pdf:
+    # pdflatex, not the xelatex the qkit paper template uses. mathpazo is
+    # a pdftex-era font package, and Pandoc only honours `fontfamily:` on
+    # the pdftex path -- under xelatex or lualatex it loads fontspec and
+    # ignores the key, so the syllabus would silently render in Latin
+    # Modern. Switch both lines together if you want a different face.
+    pdf-engine: pdflatex
+    fontfamily: mathpazo
+    documentclass: article
+    classoption:
+      - "11pt"
+    geometry:
+      - margin=1in
+    fontsize: 11pt
+    linestretch: 1.05
+    number-sections: false
+    colorlinks: true
+    linkcolor: black
+    citecolor: blue
+    urlcolor: blue
+    template-partials:
+      - before-body.tex
+    include-in-header: preamble.tex
+---
+
+# Course Description
+
+This is a self-documenting syllabus template. Each section below both
+demonstrates a piece of the layout and explains how to change it ---
+replace the demonstration text with your own as you fill it in.
+
+Open the YAML header above first. The title, author and term come from
+`title:`, `author:` and `term:`, and the title and term also drive the
+running head at the top of every page after this one. The six-field
+table under the title is built from `email:`, `web:`, `officehours:`,
+`classhours:`, `office:` and `classroom:`. Delete any of those keys and
+the corresponding cell reads *TBD*; there is no LaTeX to edit for
+routine changes.
+
+Write the real course description here: what the course is about, why it
+matters, and what a student who finishes it will be able to do. Two or
+three paragraphs is the usual length.
+
+# Objectives
+
+By the end of the course, students will be able to:
+
+1. State the first learning objective in terms of what the student can
+   *do*, not what the course *covers*.
+
+2. State the second objective.
+
+3. State the third objective.
+
+4. State the fourth objective.
+
+5. State the fifth objective.
+
+Keep the list to five or six entries. Lists here are ordinary markdown,
+and the numbering is automatic --- inserting an objective in the middle
+renumbers the rest.
+
+# Prerequisites and Materials
+
+**Prerequisites.** List the courses or the background a student needs
+before enrolling, along with any placement requirement or instructor
+permission.
+
+**Software.** List everything students must install, with versions and a
+link to the download page --- for example the course computing
+environment [@toolmaker2024software] together with an IDE. Say
+explicitly whether the software is free, and whether lab machines have
+it preinstalled.
+
+**Readings.** The list at the end of this document is generated from
+`references.bib` and headed *Recommended Readings*. Every entry shipped
+there is a placeholder --- invented authors and titles --- so replace
+them with your own. Cite a work inline with `@author2020textbook`,
+which renders as a parenthetical citation, or with
+`[@researcher2018article]` for a bracketed one; both halves of the
+citation are clickable and link down to the entry. Because
+`nocite: "@*"` is set in the header, every entry in the `.bib` file is
+listed whether or not it is cited --- which is normally what a syllabus
+wants. Remove that key to list only the works you actually cite.
+
+# Methodology
+
+Describe how the course runs: lectures, seminars, problem sessions, lab
+work, or some mix. Say what students are expected to do before each
+meeting, and how class time will actually be spent.
+
+# Grading
+
+The final grade is weighted as follows:
+
+| Component | Weight | Notes |
+|:----------|-------:|:------|
+| Problem sets | 40% | Five sets, lowest score dropped |
+| Midterm exam | 25% | In class, closed book |
+| Final exam | 30% | Cumulative |
+| Participation | 5% | Attendance and in-class exercises |
+
+Weights must sum to 100%. Add a sentence here on the grading scale, on
+whether grades are curved, and on the procedure for requesting a
+regrade.
+
+# Course Schedule
+
+The schedule is a markdown pipe table. Pandoc renders these as
+`longtable`, so a schedule longer than a page breaks across pages
+rather than overflowing --- which is what you want here. The
+`tbl-colwidths` attribute sets the column proportions; without it the
+topic column gets squeezed by the longer reading entries.
+
+| Week | Dates | Topic | Readings and Deliverables |
+|:-----|:------|:------|:--------------------------|
+| 1 | Aug 24 -- Aug 28 | Introduction and course logistics | --- |
+| 2 | Aug 31 -- Sep 04 | First substantive topic | Ch. 1--2 |
+| 3 | Sep 07 -- Sep 11 | Second substantive topic | Ch. 3; PS 1 due |
+| 4 | Sep 14 -- Sep 18 | Third substantive topic | Ch. 4 |
+| 5 | Sep 21 -- Sep 25 | Fourth substantive topic | PS 2 due |
+| 6 | Sep 28 -- Oct 02 | Review and midterm exam | Midterm, Oct 02 |
+| 7 | Oct 05 -- Oct 09 | Fifth substantive topic | Ch. 5--6 |
+| 8 | Oct 12 -- Oct 16 | Sixth substantive topic | PS 3 due |
+| 9 | Oct 19 -- Oct 23 | Seventh substantive topic | Ch. 7 |
+| 10 | Oct 26 -- Oct 30 | Synthesis and final review | PS 4 due |
+
+: Course schedule {#tbl-schedule tbl-colwidths="[8,22,42,28]"}
+
+Refer to the schedule with `@tbl-schedule`, which renders as
+@tbl-schedule. Never put a literal "Table" in front of the reference:
+Quarto supplies that prefix itself, so `Table @tbl-schedule` comes out
+as *Table Table 1*.
+
+# Course Contents
+
+The detailed outline, as a nested list. Numbers and letters are
+generated, so reordering a unit does not mean renumbering by hand.
+
+1. First unit
+
+    a. First topic
+
+    b. Second topic
+
+    c. Third topic
+
+2. Second unit
+
+    a. First topic
+
+    b. Second topic
+
+3. Third unit
+
+    a. First topic
+
+    b. Second topic
+
+    c. Third topic
+
+    d. Fourth topic
+
+4. Fourth unit
+
+    a. First topic
+
+    b. Second topic
+
+# Course Policies
+
+## Academic Integrity
+
+State the institution's academic-integrity policy and what it means in
+this course specifically: which work must be individual, what
+collaboration is permitted on problem sets, whether generative AI tools
+may be used and how their use must be disclosed, and what the
+consequences of a violation are.
+
+## Late Work
+
+State the deadline convention, the penalty for late submission, and the
+circumstances under which an extension is granted along with who to ask
+and how far in advance.
+
+## Attendance
+
+State whether attendance is recorded, whether it affects the grade, and
+what a student should do after missing a class.
+
+## Accessibility and Accommodations
+
+State how students register an accommodation with the relevant office
+and how far in advance the instructor needs the paperwork. Name the
+office and give its contact details rather than pointing at the policy
+in the abstract.

@@ -15,15 +15,16 @@ create_project(
 \arguments{
 \item{path}{Path to the new project directory.}
 
-\item{type}{One of \code{"beamer"}, \code{"cv"}, \code{"book"}, \code{"paper"}. Defaults
-to \code{"beamer"}.}
+\item{type}{One of \code{"beamer"}, \code{"cv"}, \code{"book"}, \code{"paper"},
+\code{"syllabus"}. Defaults to \code{"beamer"}.}
 
-\item{title}{Presentation / book / paper title (used when \code{type} is
-\code{"beamer"}, \code{"book"}, or \code{"paper"}).}
+\item{title}{Presentation / book / paper / course title (used when
+\code{type} is \code{"beamer"}, \code{"book"}, \code{"paper"}, or \code{"syllabus"}).}
 
-\item{author}{Author name (used when \code{type} is \code{"cv"} or \code{"book"}).
-For \code{"paper"} the YAML carries a structured author list (with
-ORCID, email, affiliations); edit \code{index.qmd} after scaffolding.}
+\item{author}{Author name (used when \code{type} is \code{"cv"}, \code{"book"}, or
+\code{"syllabus"}). For \code{"paper"} the YAML carries a structured author
+list (with ORCID, email, affiliations); edit \code{index.qmd} after
+scaffolding.}
 
 \item{...}{Additional arguments passed by RStudio (ignored).}
 }
@@ -47,5 +48,9 @@ italic subsection headings, period-after-section numbering,
 citeproc bibliography) bundled with a separate Internet
 Appendix file (\code{internet-appendix.qmd}), two \code{.bib} stubs,
 and two LaTeX preamble files.
+\item \code{"syllabus"} — a course syllabus (11pt article, Palatino, 1in
+margins, unnumbered sections, running head, page x/y footer)
+with a course-information block driven from YAML and a
+natbib reading list (also self-contained — no extension).
 }
 }

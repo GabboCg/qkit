@@ -15,15 +15,20 @@
 #'     citeproc bibliography) bundled with a separate Internet
 #'     Appendix file (`internet-appendix.qmd`), two `.bib` stubs,
 #'     and two LaTeX preamble files.
+#'   * `"syllabus"` — a course syllabus (11pt article, Palatino, 1in
+#'     margins, unnumbered sections, running head, page x/y footer)
+#'     with a course-information block driven from YAML and a
+#'     natbib reading list (also self-contained — no extension).
 #'
 #' @param path Path to the new project directory.
-#' @param type One of `"beamer"`, `"cv"`, `"book"`, `"paper"`. Defaults
-#'   to `"beamer"`.
-#' @param title Presentation / book / paper title (used when `type` is
-#'   `"beamer"`, `"book"`, or `"paper"`).
-#' @param author Author name (used when `type` is `"cv"` or `"book"`).
-#'   For `"paper"` the YAML carries a structured author list (with
-#'   ORCID, email, affiliations); edit `index.qmd` after scaffolding.
+#' @param type One of `"beamer"`, `"cv"`, `"book"`, `"paper"`,
+#'   `"syllabus"`. Defaults to `"beamer"`.
+#' @param title Presentation / book / paper / course title (used when
+#'   `type` is `"beamer"`, `"book"`, `"paper"`, or `"syllabus"`).
+#' @param author Author name (used when `type` is `"cv"`, `"book"`, or
+#'   `"syllabus"`). For `"paper"` the YAML carries a structured author
+#'   list (with ORCID, email, affiliations); edit `index.qmd` after
+#'   scaffolding.
 #' @param ... Additional arguments passed by RStudio (ignored).
 #'
 #' @return Invisibly returns the project path.
@@ -40,7 +45,7 @@ create_project <- function(path,
     stop("create_project() requires a non-empty 'path' argument. Got: ",
          deparse(path), call. = FALSE)
   }
-  type <- match.arg(type, choices = c("beamer", "cv", "book", "paper"))
+  type <- match.arg(type, choices = c("beamer", "cv", "book", "paper", "syllabus"))
   fs::dir_create(path)
 
   # Substitute placeholders only when the caller supplied a usable value.
@@ -48,7 +53,7 @@ create_project <- function(path,
   # silently writes the literal string "NA" into the document.
   usable <- function(x) !is.null(x) && length(x) == 1L && !is.na(x) && nzchar(x)
 
-  if (type %in% c("book", "paper")) {
+  if (type %in% c("book", "paper", "syllabus")) {
     src <- system.file("rstudio", "templates", "project", "skeleton",
                        type, package = "qkit", mustWork = TRUE)
     files <- fs::dir_ls(src, recurse = TRUE, type = "file")
@@ -64,18 +69,26 @@ create_project <- function(path,
     #     authors live in a structured YAML block edited by hand
     #     after scaffolding — there's no "Your Name" placeholder to
     #     substitute into)
-    title_placeholder <- if (type == "book") "Your Book Title" else "Your Paper Title"
-    entries <- if (type == "book") {
-      fs::path(path, "_quarto.yml")
-    } else {
-      c(fs::path(path, "index.qmd"),
-        fs::path(path, "internet-appendix.qmd"))
-    }
+    #   * syllabus: `index.qmd` (title + author; the course title
+    #     placeholder carries the "ECON 000 — " course-code prefix, so
+    #     substituting only the trailing half keeps that prefix for the
+    #     user to edit)
+    title_placeholder <- switch(type,
+      book = "Your Book Title",
+      paper = "Your Paper Title",
+      syllabus = "Your Course Title"
+    )
+    entries <- switch(type,
+      book = fs::path(path, "_quarto.yml"),
+      paper = c(fs::path(path, "index.qmd"),
+                fs::path(path, "internet-appendix.qmd")),
+      syllabus = fs::path(path, "index.qmd")
+    )
     for (entry in entries) {
       if (!fs::file_exists(entry)) next
       content <- readLines(entry, encoding = "UTF-8")
       if (usable(title)) content <- gsub(title_placeholder, title, content, fixed = TRUE)
-      if (type == "book" && usable(author)) {
+      if (type %in% c("book", "syllabus") && usable(author)) {
         content <- gsub("Your Name", author, content, fixed = TRUE)
       }
       writeLines(content, entry, useBytes = TRUE)

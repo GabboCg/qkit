@@ -1,0 +1,23 @@
+Binding: create_project
+Type: project
+Title: qkit Syllabus
+OpenFiles: index.qmd
+Subtitle: Create a new course syllabus from the qkit template.
+
+Parameter: title
+Widget: TextInput
+Label: Course title
+Default: Your Course Title
+Position: left
+
+Parameter: author
+Widget: TextInput
+Label: Instructor name
+Default: Your Name
+Position: left
+
+Parameter: type
+Widget: TextInput
+Label: (do not edit) format type
+Default: syllabus
+Position: left
