@@ -81,17 +81,38 @@
   \endgroup
 }
 
-% Bibliography spacing: keep double-spacing off inside the reference
-% list even when the paper body uses linestretch: 2, and tighten
-% inter-entry space. Pandoc emits references inside CSLReferences (or
-% under natbib, the thebibliography list) — this hook applies on each
-% environment open, so it stays cheap.
+% ---------------------------------------------------------------------
+% Bibliography spacing: double-spaced to match the body, which is what
+% most economics and finance journals ask for in a submission.
+%
+% \setstretch{2} rather than setspace's \doublespacing. The body spacing
+% comes from Quarto's `linestretch: 2`, which the Pandoc template emits
+% as \setstretch{2}; setspace's \doublespacing computes a
+% font-size-dependent stretch that does NOT land on exactly 2, so it
+% would leave the reference leading visibly off from the body's. Anyone
+% changing `linestretch` should change this number to match, or drop
+% these two hooks entirely and let the list inherit.
+%
+% \parskip stays at 4pt so entries still read as separate blocks. At
+% double spacing an entry's own wrapped lines are already a full body
+% line apart, and without the extra 4pt an entry boundary looks
+% identical to a line wrap inside one entry.
+%
+% Pandoc emits references inside CSLReferences (citeproc) or
+% thebibliography (natbib). This template ships natbib, so
+% thebibliography is the hook that fires -- both are set so the styling
+% survives a switch to a journal's CSL style.
+%
+% To single-space the reference list instead (some journals want the
+% body double-spaced and the bibliography single), put \singlespacing
+% here in BOTH preambles.
+% ---------------------------------------------------------------------
 \AtBeginEnvironment{CSLReferences}{%
-  \singlespacing%
+  \setstretch{2}%
   \setlength{\parskip}{4pt}%
 }
 \AtBeginEnvironment{thebibliography}{%
-  \singlespacing%
+  \setstretch{2}%
   \setlength{\parskip}{4pt}%
 }
 

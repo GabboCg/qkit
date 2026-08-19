@@ -73,6 +73,21 @@
   \endgroup
 }
 
+% Bibliography spacing: must match preamble.tex or the paper and its
+% Internet Appendix disagree. This file shipped without these hooks
+% while preamble.tex single-spaced its reference list, so the appendix
+% silently inherited `linestretch: 2` and the two documents' reference
+% lists were set at different leading. See preamble.tex for why this is
+% \setstretch{2} and not setspace's \doublespacing.
+\AtBeginEnvironment{CSLReferences}{%
+  \setstretch{2}%
+  \setlength{\parskip}{4pt}%
+}
+\AtBeginEnvironment{thebibliography}{%
+  \setstretch{2}%
+  \setlength{\parskip}{4pt}%
+}
+
 % Keep tables tighter than the double-spaced body. Pandoc renders
 % markdown pipe tables as `longtable`, NOT `tabular`, so hooking only
 % `tabular` leaves every markdown table inheriting linestretch and

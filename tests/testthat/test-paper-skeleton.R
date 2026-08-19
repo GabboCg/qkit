@@ -73,6 +73,30 @@ test_that("both preambles cancel the empty paragraph above a display", {
   }
 })
 
+test_that("both preambles set the same reference-list spacing", {
+  # Third instance of the two-preamble parity bug. preamble-appendix.tex
+  # shipped with no bibliography hook at all while preamble.tex
+  # single-spaced its reference list, so the appendix inherited
+  # linestretch: 2 and the two documents' references were set at
+  # different leading -- invisible unless both PDFs are measured.
+  d <- paper_dir()
+  for (f in c("preamble.tex", "preamble-appendix.tex")) {
+    tex <- readLines(file.path(d, f), warn = FALSE)
+    for (env in c("CSLReferences", "thebibliography")) {
+      expect_true(
+        any(grepl(paste0("AtBeginEnvironment{", env, "}"), tex, fixed = TRUE)),
+        info = paste(f, "does not hook", env)
+      )
+    }
+    # setspace's \doublespacing does not land on exactly linestretch: 2,
+    # so the hooks must use \setstretch to match the body.
+    expect_true(
+      any(grepl("setstretch{2}", tex, fixed = TRUE)),
+      info = paste(f, "does not set reference spacing with \\setstretch{2}")
+    )
+  }
+})
+
 test_that("both preambles set the journal caption style", {
   d <- paper_dir()
   for (f in c("preamble.tex", "preamble-appendix.tex")) {
