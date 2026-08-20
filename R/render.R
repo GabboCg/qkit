@@ -9,12 +9,18 @@
 #' @return The return value of `quarto::quarto_render()`.
 #' @export
 qkit_render <- function(input, ...) {
+
   ensure_extension(input)
+
   if (!requireNamespace("quarto", quietly = TRUE)) {
+
     stop("Package 'quarto' is required. Install it with install.packages('quarto').",
          call. = FALSE)
+
   }
+
   quarto::quarto_render(input, ...)
+
 }
 
 #' Preview a qkit Quarto document
@@ -28,12 +34,18 @@ qkit_render <- function(input, ...) {
 #' @return The return value of `quarto::quarto_preview()`.
 #' @export
 qkit_preview <- function(input, ...) {
+
   ensure_extension(input)
+
   if (!requireNamespace("quarto", quietly = TRUE)) {
+
     stop("Package 'quarto' is required. Install it with install.packages('quarto').",
          call. = FALSE)
+
   }
+
   quarto::quarto_preview(input, ...)
+
 }
 
 #' Detect qkit base formats referenced in a Quarto document's YAML
@@ -44,8 +56,8 @@ qkit_preview <- function(input, ...) {
 #'   if the front matter cannot be parsed.
 #' @noRd
 detect_qkit_formats <- function(input) {
-  lines <- tryCatch(readLines(input, warn = FALSE, encoding = "UTF-8"),
-                    error = function(e) character(0))
+
+  lines <- tryCatch(readLines(input, warn = FALSE, encoding = "UTF-8"), error = function(e) character(0))
   fence <- which(lines == "---")
   if (length(fence) < 2) return(character(0))
   yaml_text <- paste(lines[(fence[[1]] + 1):(fence[[2]] - 1)], collapse = "\n")
@@ -54,23 +66,31 @@ detect_qkit_formats <- function(input) {
 
   fmt <- meta$format
   keys <- if (is.character(fmt)) {
+
     fmt
+
   } else if (is.list(fmt)) {
+
     # YAML map: format: { qkit-beamer: default, ... } → take names.
     # YAML sequence: format: [qkit-beamer, html] parses as an unnamed list of
     # character entries → take values too. Cover both shapes.
-    c(names(fmt), unlist(fmt[vapply(fmt, is.character, logical(1))],
-                         use.names = FALSE))
+    c(names(fmt), unlist(fmt[vapply(fmt, is.character, logical(1))], use.names = FALSE))
+
   } else {
+
     character(0)
+
   }
+
   keys <- keys[!is.na(keys) & nzchar(keys)]
 
   prefix <- "qkit-"
   hits <- keys[startsWith(keys, prefix)]
   types <- substring(hits, nchar(prefix) + 1L)
   types <- types[types %in% c("beamer", "pdf")]
+
   unique(types)
+
 }
 
 #' Auto-install the qkit extension when referenced by a Quarto file
@@ -85,11 +105,18 @@ detect_qkit_formats <- function(input) {
 #' @param input Path to a `.qmd` file.
 #' @noRd
 ensure_extension <- function(input) {
+
   types <- detect_qkit_formats(input)
   if (length(types) == 0L) return(invisible(FALSE))
+
   project_dir <- fs::path_dir(fs::path_abs(input))
+
   if (!fs::dir_exists(fs::path(project_dir, "_extensions", "qkit"))) {
+
     install_extension(path = project_dir)
+
   }
+
   invisible(TRUE)
+  
 }

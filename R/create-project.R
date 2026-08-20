@@ -42,8 +42,10 @@ create_project <- function(path,
   # would silently coerce downstream fs::path() calls into the literal
   # string "NA" and write skeleton files into the parent directory.
   if (is.null(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
+
     stop("create_project() requires a non-empty 'path' argument. Got: ",
          deparse(path), call. = FALSE)
+
   }
   type <- match.arg(type, choices = c("beamer", "cv", "book", "paper", "syllabus"))
   fs::dir_create(path)
@@ -54,14 +56,18 @@ create_project <- function(path,
   usable <- function(x) !is.null(x) && length(x) == 1L && !is.na(x) && nzchar(x)
 
   if (type %in% c("book", "paper", "syllabus")) {
+
     src <- system.file("rstudio", "templates", "project", "skeleton",
                        type, package = "qkit", mustWork = TRUE)
     files <- fs::dir_ls(src, recurse = TRUE, type = "file")
+
     for (f in files) {
+
       rel <- fs::path_rel(f, src)
       target <- fs::path(path, rel)
       fs::dir_create(fs::path_dir(target))
       fs::file_copy(f, target, overwrite = FALSE)
+
     }
     # Patch placeholders in the entry file(s):
     #   * book: `_quarto.yml` (title + author both substituted)
@@ -78,22 +84,31 @@ create_project <- function(path,
       paper = "Your Paper Title",
       syllabus = "Your Course Title"
     )
+
     entries <- switch(type,
       book = fs::path(path, "_quarto.yml"),
       paper = c(fs::path(path, "index.qmd"),
                 fs::path(path, "internet-appendix.qmd")),
       syllabus = fs::path(path, "index.qmd")
     )
+
     for (entry in entries) {
+
       if (!fs::file_exists(entry)) next
       content <- readLines(entry, encoding = "UTF-8")
       if (usable(title)) content <- gsub(title_placeholder, title, content, fixed = TRUE)
       if (type %in% c("book", "syllabus") && usable(author)) {
+
         content <- gsub("Your Name", author, content, fixed = TRUE)
+
       }
+
       writeLines(content, entry, useBytes = TRUE)
+
     }
+
     return(invisible(path))
+
   }
 
   # beamer / cv: single-file skeleton + install the qkit extension.
@@ -103,12 +118,18 @@ create_project <- function(path,
   content <- readLines(skeleton, encoding = "UTF-8")
 
   if (type == "beamer" && usable(title)) {
+
     content <- gsub("Untitled Presentation", title, content, fixed = TRUE)
+
   } else if (type == "cv" && usable(author)) {
+
     content <- gsub("Your Name", author, content, fixed = TRUE)
+    
   }
 
   writeLines(content, fs::path(path, "index.qmd"), useBytes = TRUE)
   install_extension(path = path)
+
   invisible(path)
+  
 }
