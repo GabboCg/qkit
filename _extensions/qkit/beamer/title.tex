@@ -1,0 +1,58 @@
+$if(title)$
+\title[$if(short-title)$$short-title$$else$$title$$endif$]{$title$$if(thanks)$\daggerfootnote{\texttt{$thanks$}}$endif$}
+$endif$
+
+$if(subtitle)$
+$if(beamer)$
+$else$
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+$endif$
+\subtitle{$subtitle$}
+$endif$
+
+% ---- Authors (supports multiple affiliations + ORCID) ----
+$if(by-author)$
+\author[$if(short-author)$$short-author$$endif$]{%
+  $for(by-author)$%
+    {\large $it.name.literal$%
+      $if(it.orcid)$\textsuperscript{\normalsize\orcidlink{$it.orcid$}}$endif$%
+      $if(it.affiliations)$%
+        \textsuperscript{%
+          $for(it.affiliations)$\inst{$it.number$}$sep$,$endfor$%
+        }%
+      $endif$%
+    }%
+    $sep$ \and %
+  $endfor$%
+}
+$endif$
+
+% ---- Institutions (deduped list with numbers) ----
+$if(affiliations)$
+\institute[]{%
+  $for(affiliations)$%
+    \inst{$it.number$} $it.name$%
+    $if(it.department)$\\$it.department$$endif$\smallskip% 
+    $if(it.city)$, $it.city$$endif$%
+    $if(it.state)$, $it.state$$endif$%
+    $sep$\\
+  $endfor$%
+}
+$endif$
+
+$if(titlegraphic)$
+\titlegraphic{\includegraphics{$titlegraphic$}}
+$endif$
+$if(logo)$
+\logo{\includegraphics{$logo$}}
+$endif$
+
+\definecolor{quarto-callout-note-color}{RGB}{0,114,178}
+\definecolor{quarto-callout-note-color-frame}{RGB}{0,114,178}
+\definecolor{quarto-callout-warning-color}{RGB}{213,94,0}
+\definecolor{quarto-callout-warning-color-frame}{RGB}{213,94,0}

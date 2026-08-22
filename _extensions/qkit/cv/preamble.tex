@@ -1,0 +1,68 @@
+% qkit-cv preamble — included by Quarto via include-in-header.
+% Adds CV-specific packages, macros, and styling on top of Quarto's
+% default Pandoc LaTeX template.
+
+\usepackage{multicol}
+\usepackage{fontspec}
+\usepackage{marvosym}
+\usepackage{fontawesome}
+\usepackage{orcidlink}
+\usepackage{enumitem}
+\usepackage{calc}
+\usepackage{array}
+\usepackage{xcolor}
+
+% Custom column types and divider for L | R tabulars used throughout the CV.
+\definecolor{lightgray}{gray}{0.8}
+\newcolumntype{L}{>{\raggedleft}p{0.14\textwidth}}
+\newcolumntype{R}{p{0.8\textwidth}}
+\newcommand\VRule{\color{lightgray}\vrule width 0.5pt}
+
+% Section font and spacing overrides. titlesec's \titleformat conflicts with
+% Pandoc's default \paragraph redefinition, so we use sectsty for fonts and
+% titlespacing only for vertical spacing. The horizontal rule under each
+% section is injected by the Lua filter (cv/filter.lua) directly, not via
+% titleformat.
+\usepackage{sectsty}
+\sectionfont{\rmfamily\mdseries\large\bf}
+\subsectionfont{\rmfamily\mdseries\normalsize\itshape}
+
+\usepackage{titlesec}
+\titlespacing\section{0pt}{12pt plus 4pt minus 2pt}{4pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{12pt plus 4pt minus 2pt}{4pt plus 2pt minus 2pt}
+
+% Itemize without bullets, indented. Default list spacing preserved so
+% Research Experience / Teaching Experience bullets (one per institution
+% or category) keep the breathing room a CV needs.
+\renewenvironment{itemize}{%
+  \begin{list}{}{\setlength{\leftmargin}{1.5em}}%
+}{%
+  \end{list}%
+}
+
+% Paragraph spacing in lists.
+\usepackage{parskip}
+
+% Page footer: author + title on the center, page/total on the right.
+% Capture \@author and \@title (set by Pandoc via \author{} / \title{})
+% into stable macros that fancyhdr can expand on every page.
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\makeatletter
+\AtBeginDocument{%
+  \let\qkitcvauthor\@author
+  \let\qkitcvtitle\@title
+}
+\makeatother
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{\scriptsize \qkitcvauthor\ - \qkitcvtitle}
+\rfoot{\scriptsize \thepage/{\hypersetup{linkcolor=black}\pageref{LastPage}}}
+
+% Plain URL style (don't use monospace font for urls).
+\urlstyle{same}

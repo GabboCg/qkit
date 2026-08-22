@@ -1,0 +1,9 @@
+% qkit CV after-body partial — renders the "Updated: <date>" stamp at the
+% bottom of the document, right-aligned, when the YAML metadata has
+% updated: true. \hfill pushes the text to the right margin.
+
+$if(updated)$
+\vspace{6 mm}
+
+\noindent\hfill \emph{Updated:} \today
+$endif$

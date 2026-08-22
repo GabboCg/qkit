@@ -72,25 +72,25 @@ format:
 
 - **School of Your Field**, Other University, Country
 
-  ::: {.cv-entries gap="2.5pt"}
+  ::: {.cv-entries gap="2.5pt" trailing="true"}
   - 2025 - Current | Visiting Researcher
   :::
 
 - **School of Your Field**, Example University, Country
 
-  ::: {.cv-entries gap="2.5pt"}
+  ::: {.cv-entries gap="2.5pt" trailing="true"}
   - 2022 - Current | Postgraduate Researcher
   :::
 
 - **Department of Your Field**, Earlier University, Country
 
-  ::: {.cv-entries gap="2.5pt"}
+  ::: {.cv-entries gap="2.5pt" trailing="true"}
   - 2017 - 2022 | Research Assistant
   :::
 
 # Teaching Experience
 
-- **Undergraduate** \textbf{\small as Teaching Assistant}
+- **Undergraduate** [as Teaching Assistant]{.role}
 
   ::: {.cv-entries gap="2.5pt"}
   - Fall 2025 | **First Course Name** \newline School of Your Field, Example University, Country
@@ -98,19 +98,47 @@ format:
   - Fall 2024/25 | **Third Course Name** \newline School of Your Field, Example University, Country
   :::
 
-- **Undergraduate** \textbf{\small as Lecturer}
+- **Undergraduate** [as Lecturer]{.role}
 
   ::: {.cv-entries gap="2.5pt"}
   - Fall 2020 | **Fourth Course Name** \newline Department of Your Field, Earlier University, Country
   :::
 
-- **Graduate** \textbf{\small as Lecturer}
+- **Graduate** [as Lecturer]{.role}
 
   ::: {.cv-entries gap="2.5pt"}
   - Fall 2022 | **Fifth Course Name** \newline Department of Your Field, Earlier University, Country
   - Spring 2021 | **Sixth Course Name** \newline Joint Certificate Program
   - Fall 2021/22 | **Seventh Course Name** \newline Department of Your Field, Earlier University, Country
   - Spring 2020 | **Eighth Course Name** \newline Department of Your Field, Earlier University, Country
+  :::
+
+# Teaching Assistant Experience
+
+- **Undergraduate** [at Example University]{.role}
+
+  ::: {.cv-entries gap="2.5pt"}
+  - Summer 2020 | Ninth Course Name
+  - Spring 2018 | Tenth Course Name
+  - 2018 - 2019 | Eleventh Course Name
+  - 2018 - Fall 2019 | Twelfth Course Name
+  - 2017 | Thirteenth Course Name
+  :::
+
+- **Undergraduate** [at Other University]{.role}
+
+  ::: {.cv-entries gap="2.5pt"}
+  - Spring 2018 | Fourteenth Course Name
+  - Spring 2018/19 | Fifteenth Course Name
+  :::
+
+- **Graduate** [at Earlier University]{.role}
+
+  ::: {.cv-entries gap="2.5pt"}
+  - Spring 2020/21 | Sixteenth Course Name
+  - Spring 2019/21 | Seventeenth Course Name
+  - 2020 - Fall 2021 | Eighteenth Course Name
+  - Spring 2019/20 | Nineteenth Course Name
   :::
 
 # Grants and Scholarships
@@ -123,6 +151,14 @@ format:
 
 ::: {.cv-keys}
 - Referee | Journal A, Journal B, Journal C, and Journal D.
+:::
+
+# Computational Skills
+
+::: {.cv-keys}
+- Advanced | Language A, Language B, Language C, and \LaTeX{}.
+- Intermediate | Tool A, Tool B, Tool C, and Tool D.
+- Basic | Tool E, Tool F, and Tool G.
 :::
 
 # Languages
