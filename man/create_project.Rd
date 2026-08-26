@@ -51,6 +51,8 @@ and two LaTeX preamble files.
 \item \code{"syllabus"} — a course syllabus (11pt article, Palatino, 1in
 margins, unnumbered sections, running head, page x/y footer)
 with a course-information block driven from YAML and a
-natbib reading list (also self-contained — no extension).
+natbib reading list. Styling lives in the \code{qkit-syllabus}
+extension, which is installed into the project, so the document
+selects it with \code{format: qkit-syllabus-pdf}.
 }
 }

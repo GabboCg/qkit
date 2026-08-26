@@ -18,7 +18,9 @@
 #'   * `"syllabus"` — a course syllabus (11pt article, Palatino, 1in
 #'     margins, unnumbered sections, running head, page x/y footer)
 #'     with a course-information block driven from YAML and a
-#'     natbib reading list (also self-contained — no extension).
+#'     natbib reading list. Styling lives in the `qkit-syllabus`
+#'     extension, which is installed into the project, so the document
+#'     selects it with `format: qkit-syllabus-pdf`.
 #'
 #' @param path Path to the new project directory.
 #' @param type One of `"beamer"`, `"cv"`, `"book"`, `"paper"`,
@@ -107,11 +109,18 @@ create_project <- function(path,
 
     }
 
+    # book and paper are self-contained: all their styling lives in the
+    # project's own _quarto.yml / preamble files. The syllabus is not -- it
+    # selects `format: qkit-syllabus-pdf`, so the extension has to be there
+    # or the render fails outright with an unknown-format error.
+    if (type == "syllabus") install_extension(path = path, which = "qkit-syllabus")
+
     return(invisible(path))
 
   }
 
-  # beamer / cv: single-file skeleton + install the qkit extension.
+  # beamer / cv: single-file skeleton + the qkit extension. Named explicitly
+  # so these projects do not also acquire the unrelated syllabus extension.
   skeleton_name <- paste0(type, ".qmd")
   skeleton <- system.file("rstudio", "templates", "project", "skeleton",
                           skeleton_name, package = "qkit", mustWork = TRUE)
@@ -128,7 +137,7 @@ create_project <- function(path,
   }
 
   writeLines(content, fs::path(path, "index.qmd"), useBytes = TRUE)
-  install_extension(path = path)
+  install_extension(path = path, which = "qkit")
 
   invisible(path)
   

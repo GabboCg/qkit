@@ -36,43 +36,17 @@ bibliography: references.bib
 nocite: |
   @*
 
-# Citations go through natbib/BibTeX rather than Quarto's default
-# CSL/citeproc, matching the qkit paper template. natbib hyperlinks both
-# halves of an author-year citation, so the whole of "Campbell and Shiller
-# (1988)" is clickable, and it means titles in references.bib have to be
-# double-braced. `apalike` is deliberate: it ships in TeX Live base, so it
-# resolves under the TinyTeX install Quarto uses as well as a full
-# TeX Live. The heading over the generated list is \refname, set in
-# preamble.tex -- Quarto's `reference-section-title` does nothing here.
-cite-method: natbib
-biblio-style: apalike
-natbiboptions: round,authoryear
-link-citations: true
-
+# Everything that styles this document -- the article class, Palatino,
+# 1in margins, the running head, the course-information table and the
+# natbib reading list -- lives in the qkit-syllabus extension, installed
+# under _extensions/ by create_project(). To see or change any of it, edit
+# _extensions/qkit-syllabus/_extension.yml and the two .tex files beside it.
+#
+# One consequence carried by the format: citations go through
+# natbib/BibTeX rather than citeproc, so TITLES IN references.bib MUST BE
+# DOUBLE-BRACED or the apalike style lowercases them.
 format:
-  pdf:
-    # pdflatex, not the xelatex the qkit paper template uses. mathpazo is
-    # a pdftex-era font package, and Pandoc only honours `fontfamily:` on
-    # the pdftex path -- under xelatex or lualatex it loads fontspec and
-    # ignores the key, so the syllabus would silently render in Latin
-    # Modern. Switch both lines together if you want a different face.
-    pdf-engine: pdflatex
-    fontfamily: mathpazo
-    documentclass: article
-    classoption:
-      - "11pt"
-    geometry:
-      - margin=1in
-    fontsize: 11pt
-    linestretch: 1.05
-    number-sections: false
-    colorlinks: true
-    linkcolor: black
-    citecolor: blue
-    urlcolor: blue
-    template-partials:
-      - before-body.tex
-    include-in-header: preamble.tex
+  qkit-syllabus-pdf: default
 ---
 
 # Course Description

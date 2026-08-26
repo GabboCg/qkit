@@ -1,35 +1,70 @@
-#' Install the qkit Quarto extension
+#' Install the qkit Quarto extensions
 #'
-#' Copies the qkit Quarto extension files into a project directory,
-#' making the `qkit-beamer` and `qkit-pdf` formats available.
+#' Copies the bundled Quarto extension directories into a project, making
+#' their formats available to `format:` in a document's YAML.
+#'
+#' Two extensions ship with the package:
+#'
+#' * `qkit` — contributes `qkit-beamer` and `qkit-pdf` (the CV).
+#' * `qkit-syllabus` — contributes `qkit-syllabus-pdf`.
+#'
+#' They are separate directories because Quarto allows a directory only one
+#' format per base format, and `qkit` already claims `pdf` for the CV.
 #'
 #' @param path Path to the project directory. Defaults to the current
 #'   working directory.
-#' @param overwrite If `TRUE`, overwrite the existing extension.
-#'   Defaults to `FALSE`.
+#' @param which Which extensions to install. Defaults to all bundled ones;
+#'   pass `"qkit"` or `"qkit-syllabus"` to install just one.
+#' @param overwrite If `TRUE`, overwrite an extension that is already
+#'   installed. Defaults to `FALSE`.
 #'
-#' @return Invisibly returns the installed target directory.
+#' @return Invisibly returns the installed target directories.
 #' @export
-install_extension <- function(path = ".", overwrite = FALSE) {
+install_extension <- function(path = ".", which = NULL, overwrite = FALSE) {
 
-  target <- fs::path(path, "_extensions", "qkit")
+  root <- system.file("extdata", "_extensions", package = "qkit", mustWork = TRUE)
+  available <- basename(fs::dir_ls(root, type = "directory"))
 
-  if (fs::dir_exists(target) && !overwrite) {
+  if (is.null(which)) {
 
-    message("qkit extension already installed at '", target,
-            "'. Use overwrite = TRUE to reinstall.")
+    which <- available
 
-    return(invisible(target))
+  } else {
+
+    unknown <- setdiff(which, available)
+
+    if (length(unknown)) {
+
+      stop("Unknown qkit extension(s): ", paste(unknown, collapse = ", "),
+           ". Available: ", paste(available, collapse = ", "), call. = FALSE)
+
+    }
 
   }
 
   fs::dir_create(fs::path(path, "_extensions"))
-  source <- system.file("extdata", "_extensions", "qkit", package = "qkit", mustWork = TRUE)
+  targets <- character(0)
 
-  fs::dir_copy(source, target, overwrite = overwrite)
+  for (ext in which) {
 
-  message("qkit extension installed to '", target, "'.")
+    target <- fs::path(path, "_extensions", ext)
 
-  invisible(target)
+    if (fs::dir_exists(target) && !overwrite) {
+
+      message("qkit extension '", ext, "' already installed at '", target,
+              "'. Use overwrite = TRUE to reinstall.")
+
+      targets <- c(targets, target)
+      next
+
+    }
+
+    fs::dir_copy(fs::path(root, ext), target, overwrite = overwrite)
+    message("qkit extension '", ext, "' installed to '", target, "'.")
+    targets <- c(targets, target)
+
+  }
+
+  invisible(targets)
 
 }

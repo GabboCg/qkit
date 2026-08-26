@@ -2,21 +2,34 @@
 % Please edit documentation in R/install-extension.R
 \name{install_extension}
 \alias{install_extension}
-\title{Install the qkit Quarto extension}
+\title{Install the qkit Quarto extensions}
 \usage{
-install_extension(path = ".", overwrite = FALSE)
+install_extension(path = ".", which = NULL, overwrite = FALSE)
 }
 \arguments{
 \item{path}{Path to the project directory. Defaults to the current
 working directory.}
 
-\item{overwrite}{If \code{TRUE}, overwrite the existing extension.
-Defaults to \code{FALSE}.}
+\item{which}{Which extensions to install. Defaults to all bundled ones;
+pass \code{"qkit"} or \code{"qkit-syllabus"} to install just one.}
+
+\item{overwrite}{If \code{TRUE}, overwrite an extension that is already
+installed. Defaults to \code{FALSE}.}
 }
 \value{
-Invisibly returns the installed target directory.
+Invisibly returns the installed target directories.
 }
 \description{
-Copies the qkit Quarto extension files into a project directory,
-making the \code{qkit-beamer} and \code{qkit-pdf} formats available.
+Copies the bundled Quarto extension directories into a project, making
+their formats available to \verb{format:} in a document's YAML.
+}
+\details{
+Two extensions ship with the package:
+\itemize{
+\item \code{qkit} — contributes \code{qkit-beamer} and \code{qkit-pdf} (the CV).
+\item \code{qkit-syllabus} — contributes \code{qkit-syllabus-pdf}.
+}
+
+They are separate directories because Quarto allows a directory only one
+format per base format, and \code{qkit} already claims \code{pdf} for the CV.
 }

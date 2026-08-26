@@ -34,11 +34,18 @@ templates.
 | `cv` | qkit CV | LuaLaTeX one-pager | `index.qmd` + `_extensions/qkit/` |
 | `book` | qkit Book | XeLaTeX book (Krantz class) | full multi-file Quarto book project |
 | `paper` | qkit Paper | XeLaTeX article + Internet Appendix | `index.qmd`, `internet-appendix.qmd`, `title.tex`, `preamble.tex`, `preamble-appendix.tex`, `mark-last-author.lua`, `eq-parens.lua`, `float-notes.lua`, `example-figure.pdf`, `references.bib`, `references-appendix.bib` |
-| `syllabus` | qkit Syllabus | pdfLaTeX article (Palatino) | `index.qmd`, `preamble.tex`, `before-body.tex`, `references.bib`, `logo.pdf` |
+| `syllabus` | qkit Syllabus | pdfLaTeX article (Palatino) | `index.qmd`, `references.bib`, `logo.pdf` + `_extensions/qkit-syllabus/` |
 
-The Beamer and CV formats are backed by a Quarto extension; Book,
-Paper and Syllabus are self-contained project scaffolds (no extension
-installed).
+Beamer, CV and Syllabus are backed by Quarto extensions; Book and Paper
+are self-contained project scaffolds (no extension installed).
+
+Two extensions ship with the package, because Quarto allows a directory
+only one format per base format and `qkit` already claims `pdf` for the CV:
+
+| Extension | Contributes |
+|-----------|-------------|
+| `qkit` | `qkit-beamer`, `qkit-pdf` (CV) |
+| `qkit-syllabus` | `qkit-syllabus-pdf` |
 
 ## Usage
 
@@ -66,15 +73,16 @@ qkit::qkit_preview("my-slides/index.qmd")   # live-reload preview
 ```
 
 `qkit_render()` auto-installs the qkit Quarto extension into the
-project directory if it isn't already there (only relevant for
-`beamer` and `cv` — the book, paper and syllabus formats don't use
-the extension).
+project directory if it isn't already there (relevant for `beamer`,
+`cv` and `syllabus` — the book and paper formats don't use an
+extension).
 
-To install the qkit Quarto extension manually into any existing
+To install the qkit Quarto extensions manually into any existing
 Quarto project:
 
 ```r
-qkit::install_extension(path = ".")
+qkit::install_extension(path = ".")                        # both extensions
+qkit::install_extension(path = ".", which = "qkit-syllabus")  # just one
 ```
 
 ### YAML format keys
@@ -85,7 +93,7 @@ qkit::install_extension(path = ".")
 | CV     | `qkit-pdf` |
 | Book   | configured in `_quarto.yml`'s `format: pdf:` block (no extension key) |
 | Paper  | configured in `index.qmd`'s `format: pdf:` block (no extension key) |
-| Syllabus | configured in `index.qmd`'s `format: pdf:` block (no extension key) |
+| Syllabus | `qkit-syllabus-pdf` |
 
 ## Per-template features
 
@@ -178,8 +186,11 @@ qkit::install_extension(path = ".")
   raw `{=tex}`/`{=html}` blocks, `.content-visible
   when-format=...` conditional content)
 
-### Syllabus (qkit Syllabus)
+### Syllabus (`qkit-syllabus-pdf`)
 
+- Delivered as its own Quarto extension, so the document selects it
+  with `format: qkit-syllabus-pdf` and carries only its own content:
+  everything below lives in `_extensions/qkit-syllabus/`
 - 11pt `article`, 1in margins, Palatino (`mathpazo`), unnumbered
   sections
 - Course-information block driven entirely from YAML: `email:`,
